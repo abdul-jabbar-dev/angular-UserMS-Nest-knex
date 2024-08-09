@@ -28,7 +28,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ["https://secondhand-item.netlify.app"], 
+    origin: ["https://secondhand-item.netlify.app","*"], 
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Accept, Authorization",
     credentials: true, 
