@@ -23,8 +23,15 @@ let ProductsController = class ProductsController {
         const result = await this.productsService.createNewProduct(item);
         return result;
     }
-    async allProducts(user, { token }) {
-        const result = await this.productsService.getAllProducts(token);
+    async allProducts({ token, searchQuery }) {
+        const result = await this.productsService.getAllProducts(token, searchQuery);
+        return result;
+    }
+    async allProductsAdmin({ pageSize = 5, page = 1, admin, }) {
+        if (!admin) {
+            throw new common_1.UnauthorizedException("Unauthorized route");
+        }
+        const result = await this.productsService.getAllProductsAdmin(pageSize, page);
         return result;
     }
     async singleProduct(id) {
@@ -46,51 +53,57 @@ let ProductsController = class ProductsController {
 };
 exports.ProductsController = ProductsController;
 __decorate([
-    (0, common_1.Post)('create'),
+    (0, common_1.Post)("create"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "createProduct", null);
 __decorate([
-    (0, common_1.Get)('get_products'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Query)()),
+    (0, common_1.Get)("get_products"),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "allProducts", null);
 __decorate([
-    (0, common_1.Get)('get_product/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)("get_all_products"),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "allProductsAdmin", null);
+__decorate([
+    (0, common_1.Get)("get_product/:id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "singleProduct", null);
 __decorate([
-    (0, common_1.Delete)('delete/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)("delete/:id"),
+    __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "deleteProduct", null);
 __decorate([
-    (0, common_1.Get)('my_products'),
+    (0, common_1.Get)("my_products"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "myProducts", null);
 __decorate([
-    (0, common_1.Put)('update/:id'),
+    (0, common_1.Put)("update/:id"),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "myProductUpdate", null);
 exports.ProductsController = ProductsController = __decorate([
-    (0, common_1.Controller)('product'),
+    (0, common_1.Controller)("product"),
     __metadata("design:paramtypes", [products_service_1.ProductsService])
 ], ProductsController);
 //# sourceMappingURL=products.controller.js.map

@@ -22,22 +22,22 @@ let ProductsService = class ProductsService {
         try {
             const user = await this.knex
                 .getKnex()
-                .table('_users')
+                .table("_users")
                 .where({ id: item.user_id })
                 .first()
-                .select(['status', 'role']);
+                .select(["status", "role"]);
             if (user) {
-                if (user.status === 'active') {
-                    console.log('from service', user);
+                if (user.status === "active") {
+                    console.log("from service", user);
                     const result = await this.knex
                         .getKnex()
-                        .table('_products')
+                        .table("_products")
                         .insert(item)
-                        .returning('*');
+                        .returning("*");
                     return result;
                 }
                 else {
-                    throw new common_1.UnauthorizedException('Your account is inactive, please contact with admin.');
+                    throw new common_1.UnauthorizedException("Your account is inactive, please contact with admin.");
                 }
             }
             else {
@@ -51,29 +51,71 @@ let ProductsService = class ProductsService {
             throw new common_1.BadRequestException(error);
         }
     }
-    async getAllProducts(token) {
+    async getAllProducts(token, searchQuery) {
         try {
-            const query = this.knex.getKnex().table('_products').select('*');
+            const query = this.knex
+                .getKnex()
+                .table("_products")
+                .where({ status: "available" });
             if (token) {
                 const user = await this.jwt.decode(token);
                 if (user && user.id) {
                     query.whereNot({ user_id: user.id });
                 }
                 else {
-                    throw new common_1.BadRequestException('Invalid token: User ID is missing.');
+                    throw new common_1.BadRequestException("Invalid token: User ID is missing.");
                 }
             }
-            return await query.where({ status: 'available' });
+            if (searchQuery) {
+                let [SF, SV] = searchQuery.split(":");
+                query
+                    .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
+                    .select("id", "title");
+            }
+            return await query;
         }
         catch (error) {
-            throw new common_1.BadRequestException(error.message || 'An error occurred while fetching products.');
+            if (error?.message) {
+                let [SF] = searchQuery?.split(":") || undefined;
+                if (SF && error.message.includes(`column "${SF}" does not exist`)) {
+                    return [];
+                }
+            }
+            throw new common_1.BadRequestException(error.message || "An error occurred while fetching products.");
+        }
+    }
+    async getAllProductsAdmin(pageSize, page) {
+        const offset = (Number(page) - 1) * Number(pageSize);
+        try {
+            const expectResult = this.knex
+                .getKnex()
+                .table("_products")
+                .orderBy("created_at", "desc")
+                .limit(Number(pageSize))
+                .offset(offset);
+            const result = await expectResult;
+            console.log(result);
+            const totalQuery = this.knex
+                .getKnex()
+                .table("_products");
+            const [total] = await totalQuery.count();
+            return {
+                data: result,
+                total: total,
+                page: Number(page),
+                pageSize: Number(pageSize),
+            };
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.BadRequestException("Could not fetch products");
         }
     }
     async getAProduct(id) {
         try {
             const result = await this.knex
                 .getKnex()
-                .table('_products')
+                .table("_products")
                 .where({ id })
                 .first();
             return result;
@@ -89,8 +131,8 @@ let ProductsService = class ProductsService {
         try {
             const result = await this.knex
                 .getKnex()
-                .table('_products as p')
-                .where('p.user_id', id);
+                .table("_products as p")
+                .where("p.user_id", id);
             return result;
         }
         catch (error) {
@@ -104,7 +146,7 @@ let ProductsService = class ProductsService {
         try {
             const result = await this.knex
                 .getKnex()
-                .table('_products')
+                .table("_products")
                 .where({ id })
                 .del();
             if (result === 0) {
@@ -124,7 +166,7 @@ let ProductsService = class ProductsService {
         try {
             const result = await this.knex
                 .getKnex()
-                .table('_products')
+                .table("_products")
                 .where({ id })
                 .update(updatedData);
             if (result === 0) {
@@ -132,7 +174,7 @@ let ProductsService = class ProductsService {
             }
             const updatedProduct = await this.knex
                 .getKnex()
-                .table('_products')
+                .table("_products")
                 .where({ id })
                 .first();
             return updatedProduct;

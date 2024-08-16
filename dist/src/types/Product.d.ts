@@ -7,3 +7,12 @@ export interface TProduct {
     image: string;
     user_id: number | string | TUserResponse;
 }
+export interface TProductResponse {
+    id: string;
+    title: string;
+    user_id: number | string | TUserResponse;
+    desc?: string;
+    created_at: Date;
+    status: "available" | "sold" | "hide";
+    price: number;
+}

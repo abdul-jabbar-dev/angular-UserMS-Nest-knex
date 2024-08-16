@@ -7,44 +7,69 @@ import {
   Post,
   Put,
   Query,
-} from '@nestjs/common';
-import { ProductsService } from './products.service';
+  UnauthorizedException,
+} from "@nestjs/common";
+import { ProductsService } from "./products.service";
 
-@Controller('product')
+@Controller("product")
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post('create')
+  @Post("create")
   async createProduct(@Body() item: any) {
     const result = await this.productsService.createNewProduct(item);
     return result;
   }
-  @Get('get_products')
+  @Get("get_products")
   async allProducts(
-    @Body() user,
-    @Query() { token }: { token: string } | undefined,
+    @Query()
+    { token, searchQuery }: { token: string; searchQuery: string } | undefined
   ) {
-    const result = await this.productsService.getAllProducts(token);
+    const result = await this.productsService.getAllProducts(
+      token,
+      searchQuery
+    );
     return result;
   }
-  @Get('get_product/:id')
-  async singleProduct(@Param('id') id) {
+  @Get("get_all_products")
+  async allProductsAdmin(
+    @Query()
+    {
+      pageSize = 5,
+      page = 1,
+      admin,
+    }: {
+      pageSize: string | number;
+      page: string | number;
+      admin: boolean;
+    }
+  ) {
+    if (!admin) {
+      throw new UnauthorizedException("Unauthorized route");
+    }
+    const result = await this.productsService.getAllProductsAdmin(
+      pageSize,
+      page
+    );
+    return result;
+  }
+  @Get("get_product/:id")
+  async singleProduct(@Param("id") id) {
     const result = await this.productsService.getAProduct(id);
     return result;
   }
-  @Delete('delete/:id')
-  async deleteProduct(@Param('id') id) {
+  @Delete("delete/:id")
+  async deleteProduct(@Param("id") id) {
     const result = await this.productsService.deleteAProduct(id);
     return result;
   }
-  @Get('my_products')
+  @Get("my_products")
   async myProducts(@Body() { user_id }) {
- 
     const result = await this.productsService.getMyProducts(user_id);
     return result;
   }
-  @Put('update/:id')
-  async myProductUpdate(@Body() productInfo, @Param('id') id) {
+  @Put("update/:id")
+  async myProductUpdate(@Body() productInfo, @Param("id") id) {
     const result = await this.productsService.updateMyProduct(productInfo, id);
     return result;
   }

@@ -1,6 +1,6 @@
-import { JwtService } from '@nestjs/jwt';
-import { KnexService } from 'src/service/knex.service';
-import { TProduct } from 'src/types/Product';
+import { JwtService } from "@nestjs/jwt";
+import { KnexService } from "src/service/knex.service";
+import { TProduct, TProductResponse } from "src/types/Product";
 export declare class ProductsService {
     knex: KnexService;
     jwt: JwtService;
@@ -8,7 +8,13 @@ export declare class ProductsService {
     createNewProduct(item: TProduct & {
         user_id: any;
     }): Promise<any[]>;
-    getAllProducts(token: string | undefined): Promise<any[]>;
+    getAllProducts(token: string | undefined, searchQuery: string | undefined): Promise<any[]>;
+    getAllProductsAdmin(pageSize: string | Number | undefined, page: string | undefined | Number): Promise<{
+        data: any[] | TProductResponse[];
+        total: any;
+        page: number;
+        pageSize: number;
+    }>;
     getAProduct(id: string): Promise<any>;
     getMyProducts(id: string): Promise<any[] | any[]>;
     deleteAProduct(id: string): Promise<number>;

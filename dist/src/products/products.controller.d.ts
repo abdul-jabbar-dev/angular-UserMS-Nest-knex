@@ -1,11 +1,22 @@
-import { ProductsService } from './products.service';
+import { ProductsService } from "./products.service";
 export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
     createProduct(item: any): Promise<any[]>;
-    allProducts(user: any, { token }: {
+    allProducts({ token, searchQuery }: {
         token: string;
+        searchQuery: string;
     } | undefined): Promise<any[]>;
+    allProductsAdmin({ pageSize, page, admin, }: {
+        pageSize: string | number;
+        page: string | number;
+        admin: boolean;
+    }): Promise<{
+        data: any[] | import("../types/Product").TProductResponse[];
+        total: any;
+        page: number;
+        pageSize: number;
+    }>;
     singleProduct(id: any): Promise<any>;
     deleteProduct(id: any): Promise<number>;
     myProducts({ user_id }: {
