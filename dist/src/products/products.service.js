@@ -127,12 +127,15 @@ let ProductsService = class ProductsService {
             throw new common_1.BadRequestException(error);
         }
     }
-    async getMyProducts(id) {
+    async getMyProducts(userId) {
         try {
             const result = await this.knex
                 .getKnex()
                 .table("_products as p")
-                .where("p.user_id", id);
+                .leftJoin("_shippingOrder as s", "p.id", "s.product_id")
+                .leftJoin("_users as u", "s.user_id", "u.id")
+                .select("p.*", "s.order_number", "u.id as order_user_id", "u.username as order_user_name")
+                .where("p.user_id", userId);
             return result;
         }
         catch (error) {

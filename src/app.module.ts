@@ -12,9 +12,10 @@ import { AuthUtilsService } from './service/auth.utils.service';
 import { JwtAuthService } from './service/jwt.service';
 import { ProductsModule } from './products/products.module';
 import { APP_FILTER } from '@nestjs/core';
+import { ShippingModule } from './shipping/shipping.module';
 
 @Module({
-  imports: [AuthModule, ProductsModule],
+  imports: [AuthModule, ProductsModule,ShippingModule],
   controllers: [AppController, AuthController],
   providers: [
     {provide:APP_FILTER,useClass:NotFoundExceptionFilter},

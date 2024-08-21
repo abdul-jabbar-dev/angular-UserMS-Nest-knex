@@ -94,7 +94,7 @@ export class ProductsService {
     page: string | undefined | Number
   ) {
     const offset = (Number(page) - 1) * Number(pageSize);
- 
+
     try {
       const expectResult = this.knex
         .getKnex()
@@ -104,7 +104,7 @@ export class ProductsService {
         .offset(offset);
 
       const result = await expectResult;
-console.log(result)
+      console.log(result);
       const totalQuery = this.knex
         .getKnex()
         .table<TProductResponse>("_products");
@@ -117,7 +117,7 @@ console.log(result)
         pageSize: Number(pageSize),
       };
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw new BadRequestException("Could not fetch products");
     }
   }
@@ -138,13 +138,21 @@ console.log(result)
       throw new BadRequestException(error);
     }
   }
-  async getMyProducts(id: string) {
+  async getMyProducts(userId: string) {
     try {
       const result = await this.knex
         .getKnex()
         .table("_products as p")
-        .where("p.user_id", id);
-
+        .leftJoin("_shippingOrder as s", "p.id", "s.product_id")
+        .leftJoin("_users as u", "s.user_id", "u.id")
+        .select(
+          "p.*",
+          "s.order_number", 
+          "u.id as order_user_id",
+          "u.username as order_user_name"
+        )
+        .where("p.user_id", userId);
+      // console.log(result);
       return result;
     } catch (error) {
       if (error.message) {
@@ -153,6 +161,7 @@ console.log(result)
       throw new BadRequestException(error);
     }
   }
+
   async deleteAProduct(id: string) {
     try {
       const result = await this.knex

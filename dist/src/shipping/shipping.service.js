@@ -18,38 +18,55 @@ let ShippingService = class ShippingService {
     }
     async create(createShipping) {
         try {
-            const data = {
-                user_id: createShipping.user_id,
-                product_id: Number(createShipping.product.id),
-                shipping_cost: Number(createShipping.bill.cost),
-                shipping_zone: createShipping.bill.spot,
-                shipping_email: createShipping.address.email,
-                shipping_phone: createShipping.address.phone,
-                city: createShipping.address.city,
-                address_line1: createShipping.address.addressLine1,
-                country: createShipping.address.country,
-                state: createShipping.address.state,
-                zip: createShipping.address.zip,
-                address_line2: createShipping.address.addressLine2,
-            };
             const result = await this.knexService
                 .getKnex()
-                .table("_shippingOrder")
-                .insert(data);
-            if (result) {
-                const updateProductState = await this.knexService
-                    .getKnex()
-                    .table("_products")
+                .transaction(async (trx) => {
+                const data = {
+                    user_id: createShipping.user_id,
+                    product_id: Number(createShipping.product.id),
+                    shipping_cost: Number(createShipping.bill.cost),
+                    shipping_zone: createShipping.bill.spot,
+                    shipping_email: createShipping.address.email,
+                    shipping_phone: createShipping.address.phone,
+                    city: createShipping.address.city,
+                    address_line1: createShipping.address.addressLine1,
+                    country: createShipping.address.country,
+                    state: createShipping.address.state,
+                    zip: createShipping.address.zip,
+                    address_line2: createShipping.address.addressLine2,
+                };
+                const isSoled = await trx("_products").where({
+                    id: data.product_id,
+                    status: "sold",
+                });
+                if (isSoled?.length) {
+                    throw new common_1.UnprocessableEntityException("Product Already Placed");
+                }
+                const [orderId] = await trx("_shippingOrder")
+                    .insert(data)
+                    .returning("*");
+                if (!orderId) {
+                    throw new common_1.UnprocessableEntityException("Shopping Order failed");
+                }
+                const updateProductState = await trx("_products")
                     .where({ id: data.product_id })
                     .update({ status: "sold" });
-                return updateProductState;
-            }
-            else {
-                throw new common_1.UnprocessableEntityException("Shopping Order failed");
-            }
+                if (updateProductState === 0) {
+                    throw new common_1.UnprocessableEntityException("Failed to update product status");
+                }
+                else {
+                    return updateProductState;
+                }
+            });
+            return result;
         }
         catch (error) {
-            throw new common_1.UnprocessableEntityException(error);
+            if (error.message) {
+                throw new common_1.UnprocessableEntityException(error.message);
+            }
+            else {
+                throw new common_1.UnprocessableEntityException(error);
+            }
         }
     }
     findAll() {

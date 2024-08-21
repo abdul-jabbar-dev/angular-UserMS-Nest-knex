@@ -1,4 +1,3 @@
-
 import {
   Body,
   Controller,
@@ -26,6 +25,7 @@ export class ProductsController {
     @Query()
     { token, searchQuery }: { token: string; searchQuery: string } | undefined
   ) {
+    console.log(token, searchQuery);
     const result = await this.productsService.getAllProducts(
       token,
       searchQuery

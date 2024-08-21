@@ -21,6 +21,6 @@ export declare class ProductsController {
     deleteProduct(id: any): Promise<number>;
     myProducts({ user_id }: {
         user_id: any;
-    }): Promise<any[] | any[]>;
+    }): Promise<any[]>;
     myProductUpdate(productInfo: any, id: any): Promise<any>;
 }

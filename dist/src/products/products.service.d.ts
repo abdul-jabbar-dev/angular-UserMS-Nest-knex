@@ -16,7 +16,7 @@ export declare class ProductsService {
         pageSize: number;
     }>;
     getAProduct(id: string): Promise<any>;
-    getMyProducts(id: string): Promise<any[] | any[]>;
+    getMyProducts(userId: string): Promise<any[]>;
     deleteAProduct(id: string): Promise<number>;
     updateMyProduct(updatedData: Partial<TProduct>, id: string): Promise<any>;
 }
