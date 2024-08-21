@@ -3,9 +3,7 @@ import { AuthUtilsService } from "./../service/auth.utils.service";
 import { TUser, TUserResponse, Tlogin } from "./../types/User";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { KnexService } from "src/service/knex.service";
-
-// Ensure this path is correct
-
+ 
 @Injectable()
 export class AuthService {
   constructor(

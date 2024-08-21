@@ -20,7 +20,7 @@ let AuthModule = class AuthModule {
     configure(consumer) {
         consumer
             .apply(authorization_middleware_1.AuthorizationMiddleware)
-            .forRoutes({ path: "user/status_update/:id", method: common_1.RequestMethod.PUT }, { path: "user/role_update/:id", method: common_1.RequestMethod.PUT }, { path: "user/get_users", method: common_1.RequestMethod.GET }, { path: "user/delete/:id", method: common_1.RequestMethod.DELETE }, { path: "user/update_profile", method: common_1.RequestMethod.PUT }, { path: "user/get_my_profile", method: common_1.RequestMethod.GET });
+            .forRoutes({ path: "user/status_update/:id", method: common_1.RequestMethod.PUT }, { path: "user/role_update/:id", method: common_1.RequestMethod.PUT }, { path: "user/get_users", method: common_1.RequestMethod.GET }, { path: "user/delete/:id", method: common_1.RequestMethod.DELETE }, { path: "shipping", method: common_1.RequestMethod.ALL }, { path: "user/update_profile", method: common_1.RequestMethod.PUT }, { path: "user/get_my_profile", method: common_1.RequestMethod.GET });
     }
 };
 exports.AuthModule = AuthModule;

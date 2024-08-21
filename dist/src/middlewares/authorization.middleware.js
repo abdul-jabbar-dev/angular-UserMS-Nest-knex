@@ -17,25 +17,32 @@ let AuthorizationMiddleware = class AuthorizationMiddleware {
         this.jwt = jwt;
     }
     async use(req, res, next) {
-        if (req.headers.authorization) {
-            let token = req.headers.authorization;
-            if (token.includes("Bearer")) {
-                token = req.headers.authorization.split(" ")[1];
-            }
-            const user = await this.jwt.decryptToken(token);
-            if (user?.role === "admin" ||
-                req.route.path === "/product/create" ||
-                req.route.path === "/user/get_my_profile" ||
-                req.route.path === "/user/update_profile") {
-                req.body.user_id = user.id;
-                next();
+        try {
+            if (req.headers.authorization) {
+                let token = req.headers.authorization;
+                if (token.includes("Bearer")) {
+                    token = req.headers.authorization.split(" ")[1];
+                }
+                const user = await this.jwt.decryptToken(token);
+                if (user?.role === "admin" ||
+                    req.route.path === "/product/create" ||
+                    req.route.path === "/shipping" ||
+                    req.route.path === "/user/get_my_profile" ||
+                    req.route.path === "/product/my_products" ||
+                    req.route.path === "/user/update_profile") {
+                    req.body.user_id = user.id;
+                    next();
+                }
+                else {
+                    throw new common_1.UnauthorizedException("Unauthorized! Admin can handle.");
+                }
             }
             else {
-                throw new common_1.UnauthorizedException("Unauthorized! Admin can handle.");
+                throw new common_1.UnauthorizedException("Login Required!");
             }
         }
-        else {
-            throw new common_1.UnauthorizedException("Login Required!");
+        catch (error) {
+            throw new common_1.UnauthorizedException("error");
         }
     }
 };

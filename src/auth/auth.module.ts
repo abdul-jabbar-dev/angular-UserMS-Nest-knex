@@ -38,6 +38,7 @@ export class AuthModule implements NestModule {
         { path: "user/role_update/:id", method: RequestMethod.PUT },
         { path: "user/get_users", method: RequestMethod.GET },
         { path: "user/delete/:id", method: RequestMethod.DELETE },
+        { path: "shipping", method: RequestMethod.ALL },
         { path: "user/update_profile", method: RequestMethod.PUT },
         { path: "user/get_my_profile", method: RequestMethod.GET }
       );
