@@ -20,6 +20,7 @@ export class ProductsController {
     const result = await this.productsService.createNewProduct(item);
     return result;
   }
+  
   @Get("get_products")
   async allProducts(
     @Query()
@@ -32,6 +33,7 @@ export class ProductsController {
     );
     return result;
   }
+
   @Get("get_all_products")
   async allProductsAdmin(
     @Query()
@@ -54,21 +56,25 @@ export class ProductsController {
     );
     return result;
   }
+
   @Get("get_product/:id")
   async singleProduct(@Param("id") id) {
     const result = await this.productsService.getAProduct(id);
     return result;
   }
+
   @Delete("delete/:id")
   async deleteProduct(@Param("id") id) {
     const result = await this.productsService.deleteAProduct(id);
     return result;
   }
+
   @Get("my_products")
-  async myProducts(@Body() { user_id }) {
-    const result = await this.productsService.getMyProducts(user_id);
+  async myProducts(@Body() { user_id }, @Query() query) {
+    const result = await this.productsService.getMyProducts(user_id,query);
     return result;
   }
+
   @Put("update/:id")
   async myProductUpdate(@Body() productInfo, @Param("id") id) {
     const result = await this.productsService.updateMyProduct(productInfo, id);

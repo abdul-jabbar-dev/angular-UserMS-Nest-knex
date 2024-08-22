@@ -78,7 +78,7 @@ export class ProductsService {
       return await query;
     } catch (error) {
       if (error?.message) {
-        let [SF] = searchQuery?.split(":") || undefined;
+        let [SF] = searchQuery?.split(":") || null;
         if (SF && error.message.includes(`column "${SF}" does not exist`)) {
           return [];
         }
@@ -138,22 +138,43 @@ export class ProductsService {
       throw new BadRequestException(error);
     }
   }
-  async getMyProducts(userId: string) {
+  async getMyProducts(userId: string, query) {
     try {
-      const result = await this.knex
+      let result = this.knex
         .getKnex()
         .table("_products as p")
         .leftJoin("_shippingOrder as s", "p.id", "s.product_id")
         .leftJoin("_users as u", "s.user_id", "u.id")
         .select(
           "p.*",
-          "s.order_number", 
+          "s.order_number",
           "u.id as order_user_id",
           "u.username as order_user_name"
         )
         .where("p.user_id", userId);
-      // console.log(result);
-      return result;
+
+      const filter: string[] = JSON?.parse(query?.filter) as string[];
+      let all: any[] = await result;
+
+      const groupCount = all.reduce(
+        (
+          acc: { [x: string]: number },
+          current: { [x: string]: string | number }
+        ) => {
+          if (!acc[current["status"]]) {
+            acc[current["status"]] = 0;
+          }
+          acc[current["status"]]++;
+          return acc;
+        },
+        {}
+      );
+
+      if (filter.length > 0) {
+        all = all.filter((item) => filter.includes(item.status));
+      }
+
+      return { data: all, group: groupCount };
     } catch (error) {
       if (error.message) {
         throw new BadRequestException(error.message);

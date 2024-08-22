@@ -21,6 +21,9 @@ export declare class ProductsController {
     deleteProduct(id: any): Promise<number>;
     myProducts({ user_id }: {
         user_id: any;
-    }): Promise<any[]>;
+    }, query: any): Promise<{
+        data: any[];
+        group: any;
+    }>;
     myProductUpdate(productInfo: any, id: any): Promise<any>;
 }

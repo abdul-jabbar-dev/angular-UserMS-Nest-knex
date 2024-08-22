@@ -16,7 +16,10 @@ export declare class ProductsService {
         pageSize: number;
     }>;
     getAProduct(id: string): Promise<any>;
-    getMyProducts(userId: string): Promise<any[]>;
+    getMyProducts(userId: string, query: any): Promise<{
+        data: any[];
+        group: any;
+    }>;
     deleteAProduct(id: string): Promise<number>;
     updateMyProduct(updatedData: Partial<TProduct>, id: string): Promise<any>;
 }

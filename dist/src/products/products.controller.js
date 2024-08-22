@@ -43,8 +43,8 @@ let ProductsController = class ProductsController {
         const result = await this.productsService.deleteAProduct(id);
         return result;
     }
-    async myProducts({ user_id }) {
-        const result = await this.productsService.getMyProducts(user_id);
+    async myProducts({ user_id }, query) {
+        const result = await this.productsService.getMyProducts(user_id, query);
         return result;
     }
     async myProductUpdate(productInfo, id) {
@@ -91,8 +91,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)("my_products"),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "myProducts", null);
 __decorate([

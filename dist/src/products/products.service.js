@@ -76,7 +76,7 @@ let ProductsService = class ProductsService {
         }
         catch (error) {
             if (error?.message) {
-                let [SF] = searchQuery?.split(":") || undefined;
+                let [SF] = searchQuery?.split(":") || null;
                 if (SF && error.message.includes(`column "${SF}" does not exist`)) {
                     return [];
                 }
@@ -127,16 +127,28 @@ let ProductsService = class ProductsService {
             throw new common_1.BadRequestException(error);
         }
     }
-    async getMyProducts(userId) {
+    async getMyProducts(userId, query) {
         try {
-            const result = await this.knex
+            let result = this.knex
                 .getKnex()
                 .table("_products as p")
                 .leftJoin("_shippingOrder as s", "p.id", "s.product_id")
                 .leftJoin("_users as u", "s.user_id", "u.id")
                 .select("p.*", "s.order_number", "u.id as order_user_id", "u.username as order_user_name")
                 .where("p.user_id", userId);
-            return result;
+            const filter = JSON?.parse(query?.filter);
+            let all = await result;
+            const groupCount = all.reduce((acc, current) => {
+                if (!acc[current["status"]]) {
+                    acc[current["status"]] = 0;
+                }
+                acc[current["status"]]++;
+                return acc;
+            }, {});
+            if (filter.length > 0) {
+                all = all.filter((item) => filter.includes(item.status));
+            }
+            return { data: all, group: groupCount };
         }
         catch (error) {
             if (error.message) {
