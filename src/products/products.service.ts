@@ -77,8 +77,8 @@ export class ProductsService {
 
       return await query;
     } catch (error) {
-      if (error?.message) {
-        let [SF] = searchQuery?.split(":") || null;
+      if (error?.message && searchQuery?.split(":").length) {
+        let [SF] = searchQuery?.split(":");
         if (SF && error.message.includes(`column "${SF}" does not exist`)) {
           return [];
         }
