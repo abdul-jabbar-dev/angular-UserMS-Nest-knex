@@ -44,7 +44,6 @@ let AuthController = class AuthController {
     }
     async loginUser(user) {
         try {
-            console.log(user);
             return await this.authService.loginUser(user);
         }
         catch (error) {
@@ -52,7 +51,6 @@ let AuthController = class AuthController {
         }
     }
     async updateStatus(id) {
-        console.log(id);
         return await this.authService.userStatusUpdate(id);
     }
     async updateRole(id) {

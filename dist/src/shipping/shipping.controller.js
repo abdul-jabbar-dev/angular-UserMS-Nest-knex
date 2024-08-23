@@ -25,8 +25,8 @@ let ShippingController = class ShippingController {
     findAll() {
         return this.shippingService.findAll();
     }
-    findOne(id) {
-        return this.shippingService.findOne(+id);
+    async findOne(id, userInfo) {
+        return await this.shippingService.findOne(+id, userInfo);
     }
     update(id, updateShipping) {
         return this.shippingService.update(+id, updateShipping);
@@ -50,11 +50,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ShippingController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(":id"),
-    __param(0, (0, common_1.Param)("id")),
+    (0, common_1.Get)(":product_id"),
+    __param(0, (0, common_1.Param)("product_id")),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], ShippingController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(":id"),

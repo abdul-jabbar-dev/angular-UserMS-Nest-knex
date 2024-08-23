@@ -138,8 +138,7 @@ export class AuthService {
     let username: string = "";
     let password: string = "";
     let createdUser: TUserResponse;
-    try {
-      console.log(userInfo);
+    try { 
       const isExist = await this.knexService
         .getKnex()
         .table<TUserResponse>("_users")
@@ -165,8 +164,7 @@ export class AuthService {
           })
           .returning("*");
       }
-      if (createdUser) {
-        console.log(createdUser);
+      if (createdUser) { 
         return {
           data: createdUser,
           token: await this.jwt.generateToken({
@@ -179,8 +177,7 @@ export class AuthService {
       } else {
         throw new BadRequestException("Registration failed");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error) { 
       if (error.constraint) {
         throw new BadRequestException(error.constraint);
       } else if (error.message) {

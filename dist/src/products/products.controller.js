@@ -24,7 +24,6 @@ let ProductsController = class ProductsController {
         return result;
     }
     async allProducts({ token, searchQuery }) {
-        console.log(token, searchQuery);
         const result = await this.productsService.getAllProducts(token, searchQuery);
         return result;
     }

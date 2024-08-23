@@ -16,13 +16,13 @@ export class AuthorizationMiddleware implements NestMiddleware {
         if (token.includes("Bearer")) {
           token = req.headers.authorization.split(" ")[1];
         }
-
         const user = await this.jwt.decryptToken(token);
         if (
           (user as any)?.role === "admin" ||
           req.route.path === "/product/create" ||
           req.route.path === "/shipping" ||
           req.route.path === "/user/get_my_profile" ||
+          req.route.path === "/shipping/:product_id" ||
           req.route.path === "/product/my_products" ||
           req.route.path === "/user/update_profile"
         ) {

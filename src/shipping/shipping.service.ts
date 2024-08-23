@@ -14,6 +14,7 @@ type Order = {
   state: string;
   country: string;
   zip: string;
+  order_status: string;
 };
 
 @Injectable()
@@ -38,6 +39,7 @@ export class ShippingService {
             state: createShipping.address.state,
             zip: createShipping.address.zip,
             address_line2: createShipping.address.addressLine2,
+            order_status: "pending",
           };
           const isSoled = await trx("_products").where({
             id: data.product_id,
@@ -53,17 +55,8 @@ export class ShippingService {
           if (!orderId) {
             throw new UnprocessableEntityException("Shopping Order failed");
           }
-          const updateProductState = await trx("_products")
-            .where({ id: data.product_id })
-            .update({ status: "sold" });
 
-          if (updateProductState === 0) {
-            throw new UnprocessableEntityException(
-              "Failed to update product status"
-            );
-          } else {
-            return updateProductState;
-          }
+          return orderId;
         });
 
       return result;
@@ -80,8 +73,17 @@ export class ShippingService {
     return `This action returns all shipping`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} shipping`;
+  async findOne(id: number, userInfo: any) {
+    try {
+      const result = await this.knexService
+        .getKnex()
+        .table("_shippingOrder")
+        .where({ product_id: id, user_id: userInfo.user_id })
+        .first(); 
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateShippingDto: any) {

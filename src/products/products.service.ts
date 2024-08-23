@@ -25,8 +25,7 @@ export class ProductsService {
         .select(["status", "role"]);
 
       if (user) {
-        if (user.status === "active") {
-          console.log("from service", user);
+        if (user.status === "active") { 
           const result = await this.knex
             .getKnex()
             .table("_products")
@@ -103,8 +102,7 @@ export class ProductsService {
         .limit(Number(pageSize))
         .offset(offset);
 
-      const result = await expectResult;
-      console.log(result);
+      const result = await expectResult; 
       const totalQuery = this.knex
         .getKnex()
         .table<TProductResponse>("_products");
@@ -116,8 +114,7 @@ export class ProductsService {
         page: Number(page),
         pageSize: Number(pageSize),
       };
-    } catch (error) {
-      console.log(error);
+    } catch (error) { 
       throw new BadRequestException("Could not fetch products");
     }
   }

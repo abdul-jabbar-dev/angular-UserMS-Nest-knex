@@ -14,6 +14,9 @@ export class ShippingModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthorizationMiddleware)
-      .forRoutes({ path: "shipping", method: RequestMethod.POST });
+      .forRoutes(
+        { path: "shipping", method: RequestMethod.POST },
+        { path: "shipping/:product_id", method: RequestMethod.GET }
+      );
   }
 }

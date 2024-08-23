@@ -18,7 +18,7 @@ let ShippingModule = class ShippingModule {
     configure(consumer) {
         consumer
             .apply(authorization_middleware_1.AuthorizationMiddleware)
-            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST });
+            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping/:product_id", method: common_1.RequestMethod.GET });
     }
 };
 exports.ShippingModule = ShippingModule;

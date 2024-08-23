@@ -125,7 +125,6 @@ let AuthService = class AuthService {
         let password = "";
         let createdUser;
         try {
-            console.log(userInfo);
             const isExist = await this.knexService
                 .getKnex()
                 .table("_users")
@@ -150,7 +149,6 @@ let AuthService = class AuthService {
                     .returning("*");
             }
             if (createdUser) {
-                console.log(createdUser);
                 return {
                     data: createdUser,
                     token: await this.jwt.generateToken({
@@ -166,7 +164,6 @@ let AuthService = class AuthService {
             }
         }
         catch (error) {
-            console.log(error);
             if (error.constraint) {
                 throw new common_1.BadRequestException(error.constraint);
             }

@@ -23,9 +23,10 @@ export class ShippingController {
     return this.shippingService.findAll();
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.shippingService.findOne(+id);
+  @Get(":product_id")
+  async findOne(@Param("product_id") id: string, @Body() userInfo) {
+   
+    return await this.shippingService.findOne(+id, userInfo);
   }
 
   @Patch(":id")

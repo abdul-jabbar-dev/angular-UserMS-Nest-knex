@@ -69,8 +69,7 @@ export class AuthController {
   async loginUser(
     @Body() user: Tlogin
   ): Promise<{ data: TUserResponse; token: string } | null> {
-    try {
-      console.log(user);
+    try { 
       return await this.authService.loginUser(user);
     } catch (error) {
       throw new BadRequestException(error);
@@ -78,7 +77,7 @@ export class AuthController {
   }
   @Put("status_update/:id")
   async updateStatus(@Param("id") id: string) {
-    console.log(id)
+ 
     return await this.authService.userStatusUpdate(id);
   }
   @Put("role_update/:id")
