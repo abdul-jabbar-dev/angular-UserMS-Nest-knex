@@ -12,6 +12,7 @@ type Order = {
   address_line2?: string;
   city: string;
   state: string;
+  product_price: number;
   country: string;
   zip: string;
   order_status: string;
@@ -23,49 +24,80 @@ export class ShippingService {
 
   async create(createShipping: TOrder) {
     try {
-      const result = await this.knexService
+      const exist = await this.knexService
         .getKnex()
-        .transaction(async (trx) => {
-          const data: Order = {
-            user_id: createShipping.user_id,
-            product_id: Number(createShipping.product.id),
-            shipping_cost: Number(createShipping.bill.cost),
-            shipping_zone: createShipping.bill.spot,
-            shipping_email: createShipping.address.email,
-            shipping_phone: createShipping.address.phone,
-            city: createShipping.address.city,
-            address_line1: createShipping.address.addressLine1,
-            country: createShipping.address.country,
-            state: createShipping.address.state,
-            zip: createShipping.address.zip,
-            address_line2: createShipping.address.addressLine2,
-            order_status: "pending",
-          };
-          const isSoled = await trx("_products").where({
-            id: data.product_id,
-            status: "sold",
-          });
-          if (isSoled?.length) {
-            throw new UnprocessableEntityException("Product Already Placed");
-          }
+        .table("_shippingOrder")
+        .where({
+          product_id: createShipping.product.id,
+          user_id: createShipping.user_id,
+        })
+        .first();
 
-          const [orderId] = await trx<Order>("_shippingOrder")
-            .insert(data)
-            .returning("*");
-          if (!orderId) {
-            throw new UnprocessableEntityException("Shopping Order failed");
-          }
-
+      if (exist) {
+        return exist;
+      } else {
+        const data: Order = {
+          user_id: createShipping.user_id,
+          product_id: Number(createShipping.product.id),
+          shipping_cost: Number(createShipping.bill.cost),
+          shipping_zone: createShipping.bill.spot,
+          shipping_email: createShipping.address.email,
+          shipping_phone: createShipping.address.phone,
+          city: createShipping.address.city,
+          address_line1: createShipping.address.addressLine1,
+          country: createShipping.address.country,
+          product_price: createShipping.product.price,
+          state: createShipping.address.state,
+          zip: createShipping.address.zip,
+          address_line2: createShipping.address.addressLine2,
+          order_status: "pending",
+        };
+        const orderId = await this.knexService
+          .getKnex()
+          .table("_shippingOrder")
+          .insert(data)
+          .returning("*");
+        if (!orderId) {
+          throw new UnprocessableEntityException("Shopping Order failed");
+        } else {
           return orderId;
-        });
-
-      return result;
+        }
+      }
     } catch (error) {
       if (error.message) {
         throw new UnprocessableEntityException(error.message);
       } else {
         throw new UnprocessableEntityException(error);
       }
+    }
+  }
+
+  async confirmPayment(createShipping: any) {
+    try {
+      const knex = this.knexService.getKnex();
+
+      await knex.transaction(async (trx) => {
+        const product = await trx("_shippingOrder")
+          .where({ order_number: createShipping.orderNumber })
+          .first();
+
+        await trx("_shippingOrder")
+          .where({
+            order_number: createShipping.orderNumber,
+            user_id: createShipping.user_id,
+          })
+          .update({
+            order_status: "paid",
+          });
+
+        await trx("_products").where({ id: product.product_id }).update({
+          status: "sold",
+        });
+      });
+
+      return "Product Placed Successfully";
+    } catch (error) {
+      console.error("Error updating tables:", error);
     }
   }
 
@@ -79,7 +111,8 @@ export class ShippingService {
         .getKnex()
         .table("_shippingOrder")
         .where({ product_id: id, user_id: userInfo.user_id })
-        .first(); 
+        .first();
+      console.log(result);
       return result;
     } catch (error) {
       throw error;

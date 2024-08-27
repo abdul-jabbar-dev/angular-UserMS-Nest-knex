@@ -4,7 +4,7 @@ export interface TUserResponse {
   password?: string;
   first_name: string;
   last_name: string;
-  email:string;
+  email: string;
   age: number;
   phone: string;
   status: "active" | "deactive";
@@ -12,17 +12,18 @@ export interface TUserResponse {
   created_at: Date;
   updated_at: Date;
 }
-export interface TUser { 
+export interface TUser {
+  id?: number;
   password?: string;
-  role?:'admin'|'subscriber',
+  role?: "admin" | "subscriber";
   first_name: string;
-  email:string;
-  username?:string,
+  email: string;
+  username?: string;
   last_name: string;
   age: number;
   phone: string;
 }
-export interface Tlogin { 
-  password: string; 
-  email:string; 
+export interface Tlogin {
+  password: string;
+  email: string;
 }

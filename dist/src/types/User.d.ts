@@ -13,8 +13,9 @@ export interface TUserResponse {
     updated_at: Date;
 }
 export interface TUser {
+    id?: number;
     password?: string;
-    role?: 'admin' | 'subscriber';
+    role?: "admin" | "subscriber";
     first_name: string;
     email: string;
     username?: string;

@@ -18,9 +18,18 @@ let ShippingService = class ShippingService {
     }
     async create(createShipping) {
         try {
-            const result = await this.knexService
+            const exist = await this.knexService
                 .getKnex()
-                .transaction(async (trx) => {
+                .table("_shippingOrder")
+                .where({
+                product_id: createShipping.product.id,
+                user_id: createShipping.user_id,
+            })
+                .first();
+            if (exist) {
+                return exist;
+            }
+            else {
                 const data = {
                     user_id: createShipping.user_id,
                     product_id: Number(createShipping.product.id),
@@ -31,27 +40,24 @@ let ShippingService = class ShippingService {
                     city: createShipping.address.city,
                     address_line1: createShipping.address.addressLine1,
                     country: createShipping.address.country,
+                    product_price: createShipping.product.price,
                     state: createShipping.address.state,
                     zip: createShipping.address.zip,
                     address_line2: createShipping.address.addressLine2,
                     order_status: "pending",
                 };
-                const isSoled = await trx("_products").where({
-                    id: data.product_id,
-                    status: "sold",
-                });
-                if (isSoled?.length) {
-                    throw new common_1.UnprocessableEntityException("Product Already Placed");
-                }
-                const [orderId] = await trx("_shippingOrder")
+                const orderId = await this.knexService
+                    .getKnex()
+                    .table("_shippingOrder")
                     .insert(data)
                     .returning("*");
                 if (!orderId) {
                     throw new common_1.UnprocessableEntityException("Shopping Order failed");
                 }
-                return orderId;
-            });
-            return result;
+                else {
+                    return orderId;
+                }
+            }
         }
         catch (error) {
             if (error.message) {
@@ -60,6 +66,31 @@ let ShippingService = class ShippingService {
             else {
                 throw new common_1.UnprocessableEntityException(error);
             }
+        }
+    }
+    async confirmPayment(createShipping) {
+        try {
+            const knex = this.knexService.getKnex();
+            await knex.transaction(async (trx) => {
+                const product = await trx("_shippingOrder")
+                    .where({ order_number: createShipping.orderNumber })
+                    .first();
+                await trx("_shippingOrder")
+                    .where({
+                    order_number: createShipping.orderNumber,
+                    user_id: createShipping.user_id,
+                })
+                    .update({
+                    order_status: "paid",
+                });
+                await trx("_products").where({ id: product.product_id }).update({
+                    status: "sold",
+                });
+            });
+            return "Product Placed Successfully";
+        }
+        catch (error) {
+            console.error("Error updating tables:", error);
         }
     }
     findAll() {
@@ -72,6 +103,7 @@ let ShippingService = class ShippingService {
                 .table("_shippingOrder")
                 .where({ product_id: id, user_id: userInfo.user_id })
                 .first();
+            console.log(result);
             return result;
         }
         catch (error) {

@@ -20,7 +20,11 @@ let ShippingController = class ShippingController {
         this.shippingService = shippingService;
     }
     async create(createShipping) {
-        return await this.shippingService.create(createShipping);
+        const result = await this.shippingService.create(createShipping);
+        return result;
+    }
+    async confirmPayment(createShipping) {
+        return await this.shippingService.confirmPayment(createShipping);
     }
     findAll() {
         return this.shippingService.findAll();
@@ -43,6 +47,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ShippingController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)("/confirm"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ShippingController.prototype, "confirmPayment", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

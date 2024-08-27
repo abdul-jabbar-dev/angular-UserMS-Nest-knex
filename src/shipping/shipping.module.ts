@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { ShippingService } from "./shipping.service";
 import { ShippingController } from "./shipping.controller";
 import { AuthorizationMiddleware } from "src/middlewares/authorization.middleware";
@@ -16,6 +21,7 @@ export class ShippingModule implements NestModule {
       .apply(AuthorizationMiddleware)
       .forRoutes(
         { path: "shipping", method: RequestMethod.POST },
+        { path: "shipping/confirm", method: RequestMethod.POST },
         { path: "shipping/:product_id", method: RequestMethod.GET }
       );
   }

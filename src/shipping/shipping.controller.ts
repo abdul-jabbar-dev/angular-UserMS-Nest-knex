@@ -15,7 +15,14 @@ export class ShippingController {
 
   @Post()
   async create(@Body() createShipping) {
-    return await this.shippingService.create(createShipping);
+    const result = await this.shippingService.create(createShipping);
+
+    return result;
+  }
+
+  @Post("/confirm")
+  async confirmPayment(@Body() createShipping) {
+    return await this.shippingService.confirmPayment(createShipping);
   }
 
   @Get()
@@ -25,8 +32,7 @@ export class ShippingController {
 
   @Get(":product_id")
   async findOne(@Param("product_id") id: string, @Body() userInfo) {
-   
-    return await this.shippingService.findOne(+id, userInfo);
+     return await this.shippingService.findOne(+id, userInfo);
   }
 
   @Patch(":id")
