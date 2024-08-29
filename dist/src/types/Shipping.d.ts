@@ -21,5 +21,6 @@ export type TOrder = {
     address: Address;
     product: TProduct;
     user_id?: number;
+    promocode_id?: string;
 };
 export {};

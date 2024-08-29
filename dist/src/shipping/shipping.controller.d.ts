@@ -7,5 +7,6 @@ export declare class ShippingController {
     findAll(): string;
     findOne(id: string, userInfo: any): Promise<any>;
     update(id: string, updateShipping: any): string;
+    addPromo(id: string, updateShipping: any): Promise<any>;
     remove(id: string): string;
 }

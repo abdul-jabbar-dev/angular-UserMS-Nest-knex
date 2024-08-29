@@ -21,12 +21,13 @@ const jwt_service_1 = require("./service/jwt.service");
 const products_module_1 = require("./products/products.module");
 const core_1 = require("@nestjs/core");
 const shipping_module_1 = require("./shipping/shipping.module");
+const promo_module_1 = require("./promo/promo.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, products_module_1.ProductsModule, shipping_module_1.ShippingModule],
+        imports: [auth_module_1.AuthModule, products_module_1.ProductsModule, shipping_module_1.ShippingModule, promo_module_1.PromoModule,],
         controllers: [app_controller_1.AppController, auth_controller_1.AuthController],
         providers: [
             { provide: core_1.APP_FILTER, useClass: NotFound_1.NotFoundExceptionFilter },

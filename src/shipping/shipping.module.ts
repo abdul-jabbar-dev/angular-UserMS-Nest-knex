@@ -10,10 +10,17 @@ import { AuthorizationMiddleware } from "src/middlewares/authorization.middlewar
 import { KnexService } from "src/service/knex.service";
 import { JwtAuthService } from "src/service/jwt.service";
 import { JwtService } from "@nestjs/jwt";
+import { PromoService } from "src/promo/promo.service";
 
 @Module({
   controllers: [ShippingController],
-  providers: [ShippingService, KnexService, JwtAuthService, JwtService],
+  providers: [
+    ShippingService,
+    KnexService,
+    JwtAuthService,
+    JwtService,
+    PromoService,
+  ],
 })
 export class ShippingModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

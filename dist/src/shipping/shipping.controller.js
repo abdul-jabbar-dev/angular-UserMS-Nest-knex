@@ -35,6 +35,9 @@ let ShippingController = class ShippingController {
     update(id, updateShipping) {
         return this.shippingService.update(+id, updateShipping);
     }
+    addPromo(id, updateShipping) {
+        return this.shippingService.addPromo(+id, updateShipping);
+    }
     remove(id) {
         return this.shippingService.remove(+id);
     }
@@ -76,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ShippingController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)("addpromo/:orderId"),
+    __param(0, (0, common_1.Param)("orderId")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ShippingController.prototype, "addPromo", null);
 __decorate([
     (0, common_1.Delete)(":id"),
     __param(0, (0, common_1.Param)("id")),

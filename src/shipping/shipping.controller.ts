@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from "@nestjs/common";
 import { ShippingService } from "./shipping.service";
 
@@ -32,12 +33,17 @@ export class ShippingController {
 
   @Get(":product_id")
   async findOne(@Param("product_id") id: string, @Body() userInfo) {
-     return await this.shippingService.findOne(+id, userInfo);
+    return await this.shippingService.findOne(+id, userInfo);
   }
 
   @Patch(":id")
   update(@Param("id") id: string, @Body() updateShipping) {
     return this.shippingService.update(+id, updateShipping);
+  }
+
+  @Put("addpromo/:orderId")
+  addPromo(@Param("orderId") id: string, @Body() updateShipping) {
+    return this.shippingService.addPromo(+id, updateShipping);
   }
 
   @Delete(":id")

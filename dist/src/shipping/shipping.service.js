@@ -10,11 +10,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShippingService = void 0;
+const promo_service_1 = require("./../promo/promo.service");
 const knex_service_1 = require("../service/knex.service");
 const common_1 = require("@nestjs/common");
 let ShippingService = class ShippingService {
-    constructor(knexService) {
+    async addPromo(id, promoId) {
+        try {
+            const promo = await this.promoService.verifyCode(promoId.promocode_id);
+            const result = await this.knexService
+                .getKnex()
+                .table("_shippingOrder")
+                .where({ id })
+                .update({ promocode_id: promo.id })
+                .returning("*");
+            if (result.length > 0) {
+                await this.promoService.usePromocode(promo.id);
+                return result[0];
+            }
+            else {
+                throw new Error("No rows were updated");
+            }
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+    constructor(knexService, promoService) {
         this.knexService = knexService;
+        this.promoService = promoService;
     }
     async create(createShipping) {
         try {
@@ -46,6 +70,12 @@ let ShippingService = class ShippingService {
                     address_line2: createShipping.address.addressLine2,
                     order_status: "pending",
                 };
+                if (createShipping.promocode_id) {
+                    const promo = await this.promoService.verifyCode(createShipping.promocode_id);
+                    if (promo) {
+                        data["promocode_id"] = promo.id;
+                    }
+                }
                 const orderId = await this.knexService
                     .getKnex()
                     .table("_shippingOrder")
@@ -55,6 +85,9 @@ let ShippingService = class ShippingService {
                     throw new common_1.UnprocessableEntityException("Shopping Order failed");
                 }
                 else {
+                    if (data.promocode_id) {
+                        await this.promoService.usePromocode(data.promocode_id);
+                    }
                     return orderId;
                 }
             }
@@ -120,6 +153,7 @@ let ShippingService = class ShippingService {
 exports.ShippingService = ShippingService;
 exports.ShippingService = ShippingService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [knex_service_1.KnexService])
+    __metadata("design:paramtypes", [knex_service_1.KnexService,
+        promo_service_1.PromoService])
 ], ShippingService);
 //# sourceMappingURL=shipping.service.js.map

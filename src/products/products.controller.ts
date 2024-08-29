@@ -62,6 +62,7 @@ export class ProductsController {
     return result;
   }
 
+
   @Delete("delete/:id")
   async deleteProduct(@Param("id") id) {
     const result = await this.productsService.deleteAProduct(id);

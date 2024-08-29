@@ -1,3 +1,4 @@
+import { PromoService } from "./../promo/promo.service";
 import { KnexService } from "src/service/knex.service";
 import { TOrder } from "./../types/Shipping";
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
@@ -16,11 +17,37 @@ type Order = {
   country: string;
   zip: string;
   order_status: string;
+  promocode_id?: number;
 };
 
 @Injectable()
 export class ShippingService {
-  constructor(private readonly knexService: KnexService) {}
+  async addPromo(id: number, promoId: { promocode_id: string }) {
+    try {
+      const promo = await this.promoService.verifyCode(promoId.promocode_id);
+      const result = await this.knexService
+        .getKnex()
+        .table("_shippingOrder")
+        .where({ id })
+        .update({ promocode_id: promo.id })
+        .returning("*");
+
+      if (result.length > 0) {
+        await this.promoService.usePromocode(promo.id);
+        return result[0];
+      } else {
+        throw new Error("No rows were updated");
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  constructor(
+    private readonly knexService: KnexService,
+    protected promoService: PromoService
+  ) {}
 
   async create(createShipping: TOrder) {
     try {
@@ -52,6 +79,15 @@ export class ShippingService {
           address_line2: createShipping.address.addressLine2,
           order_status: "pending",
         };
+        if (createShipping.promocode_id) {
+          const promo = await this.promoService.verifyCode(
+            createShipping.promocode_id
+          );
+
+          if (promo) {
+            data["promocode_id"] = promo.id;
+          }
+        }
         const orderId = await this.knexService
           .getKnex()
           .table("_shippingOrder")
@@ -60,6 +96,9 @@ export class ShippingService {
         if (!orderId) {
           throw new UnprocessableEntityException("Shopping Order failed");
         } else {
+          if (data.promocode_id) {
+            await this.promoService.usePromocode(data.promocode_id);
+          }
           return orderId;
         }
       }

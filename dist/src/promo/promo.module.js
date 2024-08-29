@@ -6,33 +6,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ShippingModule = void 0;
+exports.PromoModule = void 0;
 const common_1 = require("@nestjs/common");
-const shipping_service_1 = require("./shipping.service");
-const shipping_controller_1 = require("./shipping.controller");
+const promo_service_1 = require("./promo.service");
+const promo_controller_1 = require("./promo.controller");
 const authorization_middleware_1 = require("../middlewares/authorization.middleware");
-const knex_service_1 = require("../service/knex.service");
 const jwt_service_1 = require("../service/jwt.service");
 const jwt_1 = require("@nestjs/jwt");
-const promo_service_1 = require("../promo/promo.service");
-let ShippingModule = class ShippingModule {
+const knex_service_1 = require("../service/knex.service");
+let PromoModule = class PromoModule {
     configure(consumer) {
         consumer
             .apply(authorization_middleware_1.AuthorizationMiddleware)
-            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping/confirm", method: common_1.RequestMethod.POST }, { path: "shipping/:product_id", method: common_1.RequestMethod.GET });
+            .forRoutes({ path: "promo/create", method: common_1.RequestMethod.POST }, { path: "promo", method: common_1.RequestMethod.GET }, { path: "promo/status/:id", method: common_1.RequestMethod.PUT });
     }
 };
-exports.ShippingModule = ShippingModule;
-exports.ShippingModule = ShippingModule = __decorate([
+exports.PromoModule = PromoModule;
+exports.PromoModule = PromoModule = __decorate([
     (0, common_1.Module)({
-        controllers: [shipping_controller_1.ShippingController],
-        providers: [
-            shipping_service_1.ShippingService,
-            knex_service_1.KnexService,
-            jwt_service_1.JwtAuthService,
-            jwt_1.JwtService,
-            promo_service_1.PromoService,
-        ],
+        controllers: [promo_controller_1.PromoController],
+        providers: [promo_service_1.PromoService, jwt_service_1.JwtAuthService, jwt_1.JwtService, knex_service_1.KnexService],
     })
-], ShippingModule);
-//# sourceMappingURL=shipping.module.js.map
+], PromoModule);
+//# sourceMappingURL=promo.module.js.map
