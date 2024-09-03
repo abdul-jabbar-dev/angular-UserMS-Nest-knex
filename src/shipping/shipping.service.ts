@@ -22,6 +22,11 @@ type Order = {
 
 @Injectable()
 export class ShippingService {
+  constructor(
+    private readonly knexService: KnexService,
+    protected promoService: PromoService
+  ) {}
+
   async addPromo(id: number, promoId: { promocode_id: string }) {
     try {
       const promo = await this.promoService.verifyCode(promoId.promocode_id);
@@ -43,11 +48,6 @@ export class ShippingService {
       throw error;
     }
   }
-
-  constructor(
-    private readonly knexService: KnexService,
-    protected promoService: PromoService
-  ) {}
 
   async create(createShipping: TOrder) {
     try {
@@ -140,17 +140,53 @@ export class ShippingService {
     }
   }
 
-  findAll() {
-    return `This action returns all shipping`;
+  async findAll(user_id: string) {
+    try {
+      const result = await this.knexService
+        .getKnex()
+        .select(
+          "_shippingOrder.*",
+          "_promocode.*",
+          "_products.*",
+          "_shippingOrder.created_at as shipping_order_created_at"
+        )
+        .from("_shippingOrder")
+        .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+        .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+        .where("_shippingOrder.user_id", user_id);
+
+      return { data: result };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async findOne(id: number, userInfo: any) {
+  async findOne(id: number) {
     try {
       const result = await this.knexService
         .getKnex()
         .table("_shippingOrder")
-        .where({ product_id: id, user_id: userInfo.user_id })
+        .select(
+          "_shippingOrder.*",
+          "_promocode.*",
+          "_products.*",
+          "_users.id",
+          "_users.first_name",
+          "_users.last_name",
+          "_users.phone",
+          "_users.username",
+          "_shippingOrder.id  as order_id",
+          "_users.email",
+          "_shippingOrder.created_at as shipping_order_created_at",
+          "_shippingOrder.updated_at as shipping_updated_at"
+        )
+        .from("_shippingOrder")
+        .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+        .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+        .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
+        .where("_shippingOrder.product_id", id)
         .first();
+
       console.log(result);
       return result;
     } catch (error) {

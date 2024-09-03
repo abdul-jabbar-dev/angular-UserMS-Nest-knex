@@ -14,6 +14,10 @@ const promo_service_1 = require("./../promo/promo.service");
 const knex_service_1 = require("../service/knex.service");
 const common_1 = require("@nestjs/common");
 let ShippingService = class ShippingService {
+    constructor(knexService, promoService) {
+        this.knexService = knexService;
+        this.promoService = promoService;
+    }
     async addPromo(id, promoId) {
         try {
             const promo = await this.promoService.verifyCode(promoId.promocode_id);
@@ -35,10 +39,6 @@ let ShippingService = class ShippingService {
             console.log(error);
             throw error;
         }
-    }
-    constructor(knexService, promoService) {
-        this.knexService = knexService;
-        this.promoService = promoService;
     }
     async create(createShipping) {
         try {
@@ -126,15 +126,32 @@ let ShippingService = class ShippingService {
             console.error("Error updating tables:", error);
         }
     }
-    findAll() {
-        return `This action returns all shipping`;
+    async findAll(user_id) {
+        try {
+            const result = await this.knexService
+                .getKnex()
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_shippingOrder.created_at as shipping_order_created_at")
+                .from("_shippingOrder")
+                .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+                .where("_shippingOrder.user_id", user_id);
+            return { data: result };
+        }
+        catch (error) {
+            throw error;
+        }
     }
-    async findOne(id, userInfo) {
+    async findOne(id) {
         try {
             const result = await this.knexService
                 .getKnex()
                 .table("_shippingOrder")
-                .where({ product_id: id, user_id: userInfo.user_id })
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_users.id", "_users.first_name", "_users.last_name", "_users.phone", "_users.username", "_shippingOrder.id  as order_id", "_users.email", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.updated_at as shipping_updated_at")
+                .from("_shippingOrder")
+                .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+                .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
+                .where("_shippingOrder.product_id", id)
                 .first();
             console.log(result);
             return result;

@@ -19,6 +19,9 @@ let ShippingController = class ShippingController {
     constructor(shippingService) {
         this.shippingService = shippingService;
     }
+    findAll({ user_id }) {
+        return this.shippingService.findAll(user_id);
+    }
     async create(createShipping) {
         const result = await this.shippingService.create(createShipping);
         return result;
@@ -26,11 +29,8 @@ let ShippingController = class ShippingController {
     async confirmPayment(createShipping) {
         return await this.shippingService.confirmPayment(createShipping);
     }
-    findAll() {
-        return this.shippingService.findAll();
-    }
-    async findOne(id, userInfo) {
-        return await this.shippingService.findOne(+id, userInfo);
+    async findOne(id) {
+        return await this.shippingService.findOne(+id);
     }
     update(id, updateShipping) {
         return this.shippingService.update(+id, updateShipping);
@@ -43,6 +43,13 @@ let ShippingController = class ShippingController {
     }
 };
 exports.ShippingController = ShippingController;
+__decorate([
+    (0, common_1.Get)(""),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ShippingController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -58,17 +65,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ShippingController.prototype, "confirmPayment", null);
 __decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ShippingController.prototype, "findAll", null);
-__decorate([
     (0, common_1.Get)(":product_id"),
     __param(0, (0, common_1.Param)("product_id")),
-    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ShippingController.prototype, "findOne", null);
 __decorate([

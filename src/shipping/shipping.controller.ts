@@ -9,11 +9,15 @@ import {
   Put,
 } from "@nestjs/common";
 import { ShippingService } from "./shipping.service";
-
+ 
 @Controller("shipping")
 export class ShippingController {
   constructor(private readonly shippingService: ShippingService) {}
 
+  @Get("")
+  findAll(@Body() { user_id }) { 
+    return this.shippingService.findAll(user_id);
+  }
   @Post()
   async create(@Body() createShipping) {
     const result = await this.shippingService.create(createShipping);
@@ -26,14 +30,9 @@ export class ShippingController {
     return await this.shippingService.confirmPayment(createShipping);
   }
 
-  @Get()
-  findAll() {
-    return this.shippingService.findAll();
-  }
-
   @Get(":product_id")
-  async findOne(@Param("product_id") id: string, @Body() userInfo) {
-    return await this.shippingService.findOne(+id, userInfo);
+  async findOne(@Param("product_id") id: string) {
+    return await this.shippingService.findOne(+id);
   }
 
   @Patch(":id")

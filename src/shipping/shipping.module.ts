@@ -28,8 +28,8 @@ export class ShippingModule implements NestModule {
       .apply(AuthorizationMiddleware)
       .forRoutes(
         { path: "shipping", method: RequestMethod.POST },
-        { path: "shipping/confirm", method: RequestMethod.POST },
-        { path: "shipping/:product_id", method: RequestMethod.GET }
+        { path: "shipping", method: RequestMethod.GET },
+        { path: "shipping/confirm", method: RequestMethod.POST }
       );
   }
 }
