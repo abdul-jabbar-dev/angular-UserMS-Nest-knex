@@ -9,17 +9,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShippingModule = void 0;
 const common_1 = require("@nestjs/common");
 const shipping_service_1 = require("./shipping.service");
-const shipping_controller_1 = require("./shipping.controller");
 const authorization_middleware_1 = require("../middlewares/authorization.middleware");
 const knex_service_1 = require("../service/knex.service");
 const jwt_service_1 = require("../service/jwt.service");
 const jwt_1 = require("@nestjs/jwt");
 const promo_service_1 = require("../promo/promo.service");
+const shipping_controller_1 = require("./shipping.controller");
 let ShippingModule = class ShippingModule {
     configure(consumer) {
         consumer
             .apply(authorization_middleware_1.AuthorizationMiddleware)
-            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping", method: common_1.RequestMethod.GET }, { path: "shipping/confirm", method: common_1.RequestMethod.POST });
+            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping", method: common_1.RequestMethod.GET }, { path: "shipping/get_rider_order", method: common_1.RequestMethod.GET }, { path: "shipping/add_rider", method: common_1.RequestMethod.POST }, { path: "shipping/confirm_rider/:order_id", method: common_1.RequestMethod.PUT }, { path: "shipping/confirm", method: common_1.RequestMethod.POST }, { path: "shipping/all", method: common_1.RequestMethod.GET });
     }
 };
 exports.ShippingModule = ShippingModule;

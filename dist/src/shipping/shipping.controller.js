@@ -22,8 +22,25 @@ let ShippingController = class ShippingController {
     findAll({ user_id }) {
         return this.shippingService.findAll(user_id);
     }
+    findAllOrderRider({ user_id }) {
+        return this.shippingService.findAllOrderRider(user_id);
+    }
+    findAllOrderAdmin() {
+        return this.shippingService.findAllOrderAdmin();
+    }
+    findAOrderRider(id, { user_id }) {
+        return this.shippingService.findAOrderRider(user_id, id);
+    }
+    async rider_confirm(id, { user_id }) {
+        const res = await this.shippingService.findAOrderRider(user_id, id);
+        return await this.shippingService.rider_confirm(res);
+    }
     async create(createShipping) {
         const result = await this.shippingService.create(createShipping);
+        return result;
+    }
+    async addRider(createShipping) {
+        const result = await this.shippingService.addrider(createShipping);
         return result;
     }
     async confirmPayment(createShipping) {
@@ -51,12 +68,47 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ShippingController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)("/get_rider_order"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ShippingController.prototype, "findAllOrderRider", null);
+__decorate([
+    (0, common_1.Get)("/all"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ShippingController.prototype, "findAllOrderAdmin", null);
+__decorate([
+    __param(0, (0, common_1.Param)("order_id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ShippingController.prototype, "findAOrderRider", null);
+__decorate([
+    (0, common_1.Put)("/confirm_rider/:order_id"),
+    __param(0, (0, common_1.Param)("order_id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ShippingController.prototype, "rider_confirm", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ShippingController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)("/add_rider"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ShippingController.prototype, "addRider", null);
 __decorate([
     (0, common_1.Post)("/confirm"),
     __param(0, (0, common_1.Body)()),

@@ -7,7 +7,20 @@ export declare class ShippingController {
     }): Promise<{
         data: any[];
     }>;
+    findAllOrderRider({ user_id }: {
+        user_id: any;
+    }): Promise<any[]>;
+    findAllOrderAdmin(): Promise<{
+        data: any[];
+    }>;
+    findAOrderRider(id: string, { user_id }: {
+        user_id: any;
+    }): Promise<any[]>;
+    rider_confirm(id: string, { user_id }: {
+        user_id: any;
+    }): Promise<any>;
     create(createShipping: any): Promise<any>;
+    addRider(createShipping: any): Promise<any>;
     confirmPayment(createShipping: any): Promise<string>;
     findOne(id: string): Promise<any>;
     update(id: string, updateShipping: any): string;

@@ -28,7 +28,9 @@ let AuthorizationMiddleware = class AuthorizationMiddleware {
                     req.route.path === "/product/create" ||
                     req.route.path === "/shipping" ||
                     req.route.path === "/user/get_my_profile" ||
+                    req.route.path === "/shipping/get_rider_order" ||
                     req.route.path === "/shipping/:product_id" ||
+                    req.route.path === "/shipping/confirm_rider/:order_id" ||
                     req.route.path === "/shipping/confirm" ||
                     req.route.path === "/product/my_products" ||
                     req.route.path === "/user/update_profile") {

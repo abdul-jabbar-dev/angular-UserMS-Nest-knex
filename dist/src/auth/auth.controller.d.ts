@@ -6,10 +6,10 @@ export declare class AuthController {
     myprofile({ user_id }: {
         user_id: any;
     }): Promise<any>;
-    getUsers({ pageSize, page, role }: {
+    getUsers({ pageSize, page, role, }: {
         pageSize: string | number;
         page: string | number;
-        role?: 'admin' | 'subscriber';
+        role?: "admin" | "subscriber";
     }): Promise<{
         data: TUserResponse[];
         total: number;
@@ -17,6 +17,7 @@ export declare class AuthController {
         pageSize: number;
     }>;
     getUser(id: string): Promise<TUserResponse | null>;
+    getrider(): Promise<TUserResponse[] | null>;
     registerUser(user: TUser): Promise<{
         data: TUserResponse;
         token: string;

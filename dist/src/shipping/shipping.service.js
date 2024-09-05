@@ -101,6 +101,45 @@ let ShippingService = class ShippingService {
             }
         }
     }
+    async addrider(createShipping) {
+        try {
+            const order = await this.knexService
+                .getKnex()
+                .table("_shippingOrder")
+                .where({ order_number: createShipping.order_number })
+                .select("*")
+                .first();
+            const exist = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ "_delivery.order_id": order.id })
+                .join("_users", "_delivery.delivery_boy_id", "=", "_users.id")
+                .select("_delivery.*", "_users.username as delivery_boy_name", "_users.email as delivery_boy_email")
+                .first();
+            if (exist) {
+                return { ...exist, order_id: order.id };
+            }
+            const [assignRider] = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .insert({
+                delivery_status: "packaging",
+                delivery_boy_id: createShipping.selected_rider,
+                order_id: order.id,
+            })
+                .returning("*");
+            return { ...assignRider, order_id: order.id };
+        }
+        catch (error) {
+            console.log(error);
+            if (error.message) {
+                throw new common_1.UnprocessableEntityException(error.message);
+            }
+            else {
+                throw new common_1.UnprocessableEntityException(error);
+            }
+        }
+    }
     async confirmPayment(createShipping) {
         try {
             const knex = this.knexService.getKnex();
@@ -130,7 +169,7 @@ let ShippingService = class ShippingService {
         try {
             const result = await this.knexService
                 .getKnex()
-                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_shippingOrder.created_at as shipping_order_created_at")
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.id as order_id")
                 .from("_shippingOrder")
                 .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
                 .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
@@ -141,12 +180,59 @@ let ShippingService = class ShippingService {
             throw error;
         }
     }
+    async findAllOrderAdmin() {
+        try {
+            const result = await this.knexService
+                .getKnex()
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_delivery.*", "_users.username as delivery_boy_name", "_delivery.delivery_status", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.id as order_id")
+                .from("_shippingOrder")
+                .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+                .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
+                .leftJoin("_users", "_users.id", "_delivery.delivery_boy_id");
+            return { data: result };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async findAllOrderRider(user_id) {
+        try {
+            const result = await this.knexService
+                .getKnex()
+                .select("_shippingOrder.*", "_delivery.*", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.id as order_id", "_users.username as receiver_username", "_users.first_name as receiver_first_name", "_users.last_name as receiver_last_name")
+                .from("_delivery")
+                .leftJoin("_shippingOrder", "_delivery.order_id", "_shippingOrder.id")
+                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+                .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
+                .where("_delivery.delivery_boy_id", user_id);
+            console.log(result);
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async findAOrderRider(user_id, order_id) {
+        try {
+            const result = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ delivery_boy_id: user_id, order_id: order_id })
+                .first()
+                .returning("*");
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async findOne(id) {
         try {
             const result = await this.knexService
                 .getKnex()
                 .table("_shippingOrder")
-                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_users.id", "_users.first_name", "_users.last_name", "_users.phone", "_users.username", "_shippingOrder.id  as order_id", "_users.email", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.updated_at as shipping_updated_at")
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_users.id", "_users.first_name", "_users.last_name", "_users.phone", "_users.username", "_shippingOrder.id  as order_id", "_users.email", "_shippingOrder.id as order_id", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.updated_at as shipping_updated_at")
                 .from("_shippingOrder")
                 .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
                 .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
@@ -154,6 +240,20 @@ let ShippingService = class ShippingService {
                 .where("_shippingOrder.product_id", id)
                 .first();
             console.log(result);
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async rider_confirm(delivery) {
+        try {
+            const [result] = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ id: delivery.id })
+                .update({ delivery_status: "transit" })
+                .returning("*");
             return result;
         }
         catch (error) {

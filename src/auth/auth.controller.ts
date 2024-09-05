@@ -34,11 +34,11 @@ export class AuthController {
     {
       pageSize = 5,
       page = 1,
-      role
+      role,
     }: {
       pageSize: string | number;
       page: string | number;
-      role?:'admin'|'subscriber'
+      role?: "admin" | "subscriber";
     }
   ): Promise<{
     data: TUserResponse[];
@@ -46,13 +46,18 @@ export class AuthController {
     page: number;
     pageSize: number;
   }> {
-    return await this.authService.getUsers({ pageSize, page,role });
+    return await this.authService.getUsers({ pageSize, page, role });
   }
 
   @Get("get_user/:id")
   async getUser(@Param("id") id: string): Promise<TUserResponse | null> {
     const userId = parseInt(id);
     return await this.authService.getUserById(userId);
+  }
+
+  @Get("get_rider")
+  async getrider(): Promise<TUserResponse[] | null> {
+    return await this.authService.getRiders();
   }
 
   @Post("register")
@@ -69,7 +74,7 @@ export class AuthController {
   async loginUser(
     @Body() user: Tlogin
   ): Promise<{ data: TUserResponse; token: string } | null> {
-    try { 
+    try {
       return await this.authService.loginUser(user);
     } catch (error) {
       throw new BadRequestException(error);
@@ -77,7 +82,6 @@ export class AuthController {
   }
   @Put("status_update/:id")
   async updateStatus(@Param("id") id: string) {
- 
     return await this.authService.userStatusUpdate(id);
   }
   @Put("role_update/:id")

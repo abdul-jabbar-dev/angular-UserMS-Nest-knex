@@ -5,12 +5,12 @@ import {
   RequestMethod,
 } from "@nestjs/common";
 import { ShippingService } from "./shipping.service";
-import { ShippingController } from "./shipping.controller";
 import { AuthorizationMiddleware } from "src/middlewares/authorization.middleware";
 import { KnexService } from "src/service/knex.service";
 import { JwtAuthService } from "src/service/jwt.service";
 import { JwtService } from "@nestjs/jwt";
 import { PromoService } from "src/promo/promo.service";
+import { ShippingController } from "./shipping.controller";
 
 @Module({
   controllers: [ShippingController],
@@ -29,7 +29,11 @@ export class ShippingModule implements NestModule {
       .forRoutes(
         { path: "shipping", method: RequestMethod.POST },
         { path: "shipping", method: RequestMethod.GET },
-        { path: "shipping/confirm", method: RequestMethod.POST }
+        { path: "shipping/get_rider_order", method: RequestMethod.GET },
+        { path: "shipping/add_rider", method: RequestMethod.POST },
+        { path: "shipping/confirm_rider/:order_id", method: RequestMethod.PUT },
+        { path: "shipping/confirm", method: RequestMethod.POST },
+        { path: "shipping/all", method: RequestMethod.GET }
       );
   }
 }

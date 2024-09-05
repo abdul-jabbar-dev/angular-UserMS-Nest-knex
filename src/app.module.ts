@@ -16,7 +16,7 @@ import { ShippingModule } from './shipping/shipping.module';
 import { PromoModule } from './promo/promo.module';
 
 @Module({
-  imports: [AuthModule, ProductsModule,ShippingModule, PromoModule,],
+  imports: [AuthModule, ProductsModule,ShippingModule, PromoModule],
   controllers: [AppController, AuthController],
   providers: [
     {provide:APP_FILTER,useClass:NotFoundExceptionFilter},

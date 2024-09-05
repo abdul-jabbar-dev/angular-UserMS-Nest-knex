@@ -17,6 +17,7 @@ export declare class AuthService {
         page: number;
         pageSize: number;
     }>;
+    getRiders(): Promise<any[] | TUserResponse[]>;
     getUserById(id: number): Promise<TUserResponse | null>;
     getUserByEmail(email: string): Promise<TUserResponse | null>;
     loginUser(userInfo: Tlogin): Promise<{

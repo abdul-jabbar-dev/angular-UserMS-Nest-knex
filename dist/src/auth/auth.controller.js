@@ -27,12 +27,15 @@ let AuthController = class AuthController {
             throw new common_1.BadRequestException(error);
         }
     }
-    async getUsers({ pageSize = 5, page = 1, role }) {
+    async getUsers({ pageSize = 5, page = 1, role, }) {
         return await this.authService.getUsers({ pageSize, page, role });
     }
     async getUser(id) {
         const userId = parseInt(id);
         return await this.authService.getUserById(userId);
+    }
+    async getrider() {
+        return await this.authService.getRiders();
     }
     async registerUser(user) {
         try {
@@ -91,6 +94,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getUser", null);
+__decorate([
+    (0, common_1.Get)("get_rider"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getrider", null);
 __decorate([
     (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),

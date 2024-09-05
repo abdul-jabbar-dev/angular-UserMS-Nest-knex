@@ -1,10 +1,9 @@
-
 import { JwtAuthService } from "src/service/jwt.service";
 import { AuthUtilsService } from "./../service/auth.utils.service";
 import { TUser, TUserResponse, Tlogin } from "./../types/User";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { KnexService } from "src/service/knex.service";
- 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -56,6 +55,22 @@ export class AuthService {
         page: Number(page),
         pageSize: Number(pageSize),
       };
+    } catch (error) {
+      throw new BadRequestException("Could not fetch users");
+    }
+  }
+
+  async getRiders() {
+    try {
+      const expectResult = this.knexService
+        .getKnex()
+        .table<TUserResponse>("_users")
+        .where({ role: "rider" })
+        .orderBy("created_at", "desc");
+
+      const result = await expectResult;
+
+      return result;
     } catch (error) {
       throw new BadRequestException("Could not fetch users");
     }
@@ -138,7 +153,7 @@ export class AuthService {
     let username: string = "";
     let password: string = "";
     let createdUser: TUserResponse;
-    try { 
+    try {
       const isExist = await this.knexService
         .getKnex()
         .table<TUserResponse>("_users")
@@ -164,7 +179,7 @@ export class AuthService {
           })
           .returning("*");
       }
-      if (createdUser) { 
+      if (createdUser) {
         return {
           data: createdUser,
           token: await this.jwt.generateToken({
@@ -177,7 +192,7 @@ export class AuthService {
       } else {
         throw new BadRequestException("Registration failed");
       }
-    } catch (error) { 
+    } catch (error) {
       if (error.constraint) {
         throw new BadRequestException(error.constraint);
       } else if (error.message) {

@@ -51,6 +51,20 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException("Could not fetch users");
         }
     }
+    async getRiders() {
+        try {
+            const expectResult = this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ role: "rider" })
+                .orderBy("created_at", "desc");
+            const result = await expectResult;
+            return result;
+        }
+        catch (error) {
+            throw new common_1.BadRequestException("Could not fetch users");
+        }
+    }
     async getUserById(id) {
         try {
             const result = await this.knexService

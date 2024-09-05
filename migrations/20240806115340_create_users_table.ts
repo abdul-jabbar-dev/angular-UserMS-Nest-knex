@@ -9,7 +9,7 @@ exports.up = function (knex) {
       table.integer("age").notNullable();
       table.string("phone").notNullable().unique();
       table.enu("status", ["active", "deactive"]).defaultTo("active");
-      table.enu("role", ["admin", "subscriber"]).defaultTo("subscriber");
+      table.enu("role", ["admin", "subscriber","rider"]).defaultTo("subscriber");
       table.timestamps(true, true);
     });
   });
