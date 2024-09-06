@@ -106,9 +106,7 @@ export class AuthService {
     }
   }
 
-  async loginUser(
-    userInfo: Tlogin
-  ): Promise<{ data: TUserResponse; token: string }> {
+  async loginUser(userInfo: Tlogin) {
     try {
       let loginMyUser: { data: TUserResponse; token: string } | null = null;
       const exist: TUserResponse = await this.knexService
@@ -116,11 +114,13 @@ export class AuthService {
         .table<TUserResponse>("_users")
         .where({ email: userInfo.email })
         .first();
+
       if (!exist) {
         throw new BadRequestException("User not register");
       } else {
         if (exist.status === "active") {
-          if (this.utils.compareHashed(exist.password, userInfo.password)) {
+ 
+          if (await this.utils.compareHashed(exist.password, userInfo.password)) {
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
@@ -131,6 +131,7 @@ export class AuthService {
               }),
             };
           } else {
+
             throw new BadRequestException("Invalid Password!");
           }
         } else {

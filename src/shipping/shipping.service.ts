@@ -193,10 +193,12 @@ export class ShippingService {
           "_shippingOrder.*",
           "_promocode.*",
           "_products.*",
+          "_delivery.*",
           "_shippingOrder.created_at as shipping_order_created_at",
           "_shippingOrder.id as order_id"
         )
         .from("_shippingOrder")
+        .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
         .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
         .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
         .where("_shippingOrder.user_id", user_id);

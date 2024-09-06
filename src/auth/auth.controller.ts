@@ -13,7 +13,6 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { TUser, TUserResponse, Tlogin } from "src/types/User";
-  
 
 @Controller("user")
 export class AuthController {
@@ -71,12 +70,10 @@ export class AuthController {
     }
   }
   @Post("login")
-  async loginUser(
-    @Body() user: Tlogin
-  ): Promise<{ data: TUserResponse; token: string } | null> {
+  async loginUser(@Body() user: Tlogin) {
     try {
-      return await this.authService.loginUser(user);
-    } catch (error) {
+     return await this.authService.loginUser(user)
+    } catch (error) { 
       throw new BadRequestException(error);
     }
   }

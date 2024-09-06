@@ -25,7 +25,7 @@ export declare class AuthController {
     loginUser(user: Tlogin): Promise<{
         data: TUserResponse;
         token: string;
-    } | null>;
+    }>;
     updateStatus(id: string): Promise<number>;
     updateRole(id: string): Promise<number>;
     deleteUser(id: string): Promise<number>;

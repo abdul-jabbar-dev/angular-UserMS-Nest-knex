@@ -106,7 +106,7 @@ let AuthService = class AuthService {
             }
             else {
                 if (exist.status === "active") {
-                    if (this.utils.compareHashed(exist.password, userInfo.password)) {
+                    if (await this.utils.compareHashed(exist.password, userInfo.password)) {
                         loginMyUser = {
                             data: { ...exist, password: "" },
                             token: await this.jwt.generateToken({
