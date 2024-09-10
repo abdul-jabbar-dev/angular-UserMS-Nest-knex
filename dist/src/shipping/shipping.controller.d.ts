@@ -18,12 +18,15 @@ export declare class ShippingController {
     }): Promise<any[]>;
     rider_confirm(id: string, { user_id }: {
         user_id: any;
-    }): Promise<any>;
+    }): Promise<string>;
     create(createShipping: any): Promise<any>;
     addRider(createShipping: any): Promise<any>;
     confirmPayment(createShipping: any): Promise<string>;
     findOne(id: string): Promise<any>;
     update(id: string, updateShipping: any): string;
     addPromo(id: string, updateShipping: any): Promise<any>;
+    confirmDelivery(id: string, { code }: {
+        code: any;
+    }): Promise<any>;
     remove(id: string): string;
 }

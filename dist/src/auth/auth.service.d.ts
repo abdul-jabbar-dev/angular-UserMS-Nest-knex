@@ -2,11 +2,13 @@ import { JwtAuthService } from "src/service/jwt.service";
 import { AuthUtilsService } from "./../service/auth.utils.service";
 import { TUser, TUserResponse, Tlogin } from "./../types/User";
 import { KnexService } from "src/service/knex.service";
+import { MailService } from "src/service/mail.service";
 export declare class AuthService {
     private readonly knexService;
     utils: AuthUtilsService;
     jwt: JwtAuthService;
-    constructor(knexService: KnexService, utils: AuthUtilsService, jwt: JwtAuthService);
+    sendMail: MailService;
+    constructor(knexService: KnexService, utils: AuthUtilsService, jwt: JwtAuthService, sendMail: MailService);
     getUsers({ pageSize, page, role, }: {
         pageSize: string | number;
         page: string | number;
@@ -18,12 +20,21 @@ export declare class AuthService {
         pageSize: number;
     }>;
     getRiders(): Promise<any[] | TUserResponse[]>;
+    getRiderHistory(user_id: number): Promise<{
+        totalDone: number;
+        totalBenifit: number;
+        totalPending: number;
+    }>;
     getUserById(id: number): Promise<TUserResponse | null>;
     getUserByEmail(email: string): Promise<TUserResponse | null>;
     loginUser(userInfo: Tlogin): Promise<{
         data: TUserResponse;
         token: string;
     }>;
+    gen_new_pass(id: string, { password }: {
+        password: any;
+    }): Promise<number>;
+    send_code_for_reset(email: string): Promise<TUserResponse[]>;
     registerUser(userInfo: TUser): Promise<{
         data: TUserResponse;
         token: string;

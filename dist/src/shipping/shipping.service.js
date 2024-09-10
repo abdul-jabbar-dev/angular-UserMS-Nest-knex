@@ -201,13 +201,12 @@ let ShippingService = class ShippingService {
         try {
             const result = await this.knexService
                 .getKnex()
-                .select("_shippingOrder.*", "_delivery.*", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.id as order_id", "_users.username as receiver_username", "_users.first_name as receiver_first_name", "_users.last_name as receiver_last_name")
+                .select("_shippingOrder.*", "_delivery.*", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.id as order_id", "_users.username as receiver_username", "_users.first_name as receiver_first_name", "_users.last_name as receiver_last_name", "_delivery.id as delivery_id")
                 .from("_delivery")
                 .leftJoin("_shippingOrder", "_delivery.order_id", "_shippingOrder.id")
                 .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
                 .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
                 .where("_delivery.delivery_boy_id", user_id);
-            console.log(result);
             return result;
         }
         catch (error) {
@@ -240,7 +239,6 @@ let ShippingService = class ShippingService {
                 .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
                 .where("_shippingOrder.product_id", id)
                 .first();
-            console.log(result);
             return result;
         }
         catch (error) {
@@ -249,13 +247,49 @@ let ShippingService = class ShippingService {
     }
     async rider_confirm(delivery) {
         try {
+            const genCode = Math.floor(100000 + Math.random() * 900000);
             const [result] = await this.knexService
                 .getKnex()
                 .table("_delivery")
                 .where({ id: delivery.id })
-                .update({ delivery_status: "transit" })
+                .update({
+                delivery_status: "transit",
+                delivery_received_code: genCode,
+            })
                 .returning("*");
-            return result;
+            return "result";
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async confirmDelivery(id, code) {
+        try {
+            const exist = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ id })
+                .select("*")
+                .first();
+            if (!exist) {
+                throw new common_1.ServiceUnavailableException("Order does not exist");
+            }
+            else {
+                if (exist?.delivery_received_code + "" === code + "") {
+                    const [result] = await this.knexService
+                        .getKnex()
+                        .table("_delivery")
+                        .where({ id })
+                        .update({
+                        delivery_status: "delivery",
+                    })
+                        .returning("*");
+                    return result;
+                }
+                else {
+                    throw new common_1.UnprocessableEntityException("Invalid code");
+                }
+            }
         }
         catch (error) {
             throw error;

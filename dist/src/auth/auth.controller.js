@@ -37,6 +37,9 @@ let AuthController = class AuthController {
     async getrider() {
         return await this.authService.getRiders();
     }
+    async getRiderHistory({ user_id }) {
+        return await this.authService.getRiderHistory(user_id);
+    }
     async registerUser(user) {
         try {
             return await this.authService.registerUser(user);
@@ -48,6 +51,22 @@ let AuthController = class AuthController {
     async loginUser(user) {
         try {
             return await this.authService.loginUser(user);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error);
+        }
+    }
+    async send_code_for_reset({ email }) {
+        try {
+            return await this.authService.send_code_for_reset(email);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error);
+        }
+    }
+    async gen_new_pass(id, password) {
+        try {
+            return await this.authService.gen_new_pass(id, password);
         }
         catch (error) {
             throw new common_1.BadRequestException(error);
@@ -101,6 +120,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getrider", null);
 __decorate([
+    (0, common_1.Get)("rider/get_history"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getRiderHistory", null);
+__decorate([
     (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -114,6 +140,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "loginUser", null);
+__decorate([
+    (0, common_1.Post)("send_code"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "send_code_for_reset", null);
+__decorate([
+    (0, common_1.Post)("send_new_password/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "gen_new_pass", null);
 __decorate([
     (0, common_1.Put)("status_update/:id"),
     __param(0, (0, common_1.Param)("id")),

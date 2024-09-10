@@ -24,7 +24,6 @@ let PromoController = class PromoController {
         return await this.promoService.create(user_id, promoInfo);
     }
     findAll({ pageSize = 5, page = 1, admin, }) {
-        console.log(pageSize, page);
         return this.promoService.findAll(pageSize, page);
     }
     for_users() {

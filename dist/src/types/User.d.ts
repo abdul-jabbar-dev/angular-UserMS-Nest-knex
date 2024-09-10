@@ -6,6 +6,7 @@ export interface TUserResponse {
     last_name: string;
     email: string;
     age: number;
+    reset_code?: string;
     phone: string;
     status: "active" | "deactive";
     role: "admin" | "subscriber" | "rider";
@@ -19,6 +20,7 @@ export interface TUser {
     first_name: string;
     email: string;
     username?: string;
+    reset_code?: string;
     last_name: string;
     age: number;
     phone: string;

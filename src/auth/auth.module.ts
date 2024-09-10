@@ -12,21 +12,24 @@ import { AuthService } from "./auth.service";
 import { KnexService } from "src/service/knex.service";
 import ENV from "src/util/ENV";
 import { AuthorizationMiddleware } from "src/middlewares/authorization.middleware";
+import { MailModule } from "src/modules/Mail.module";
+
+
 
 @Module({
   imports: [
+    MailModule,
     JwtModule.register({
       secret: ENV.SECRET,
       signOptions: { expiresIn: "60m" },
-    }),
+    })
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     KnexService,
     JwtAuthService,
-    AuthUtilsService,
-    JwtAuthService,
+    AuthUtilsService
   ],
 })
 export class AuthModule implements NestModule {
@@ -40,6 +43,7 @@ export class AuthModule implements NestModule {
         { path: "user/delete/:id", method: RequestMethod.DELETE },
         { path: "shipping", method: RequestMethod.ALL },
         { path: "user/update_profile", method: RequestMethod.PUT },
+        { path: "user/rider/get_history", method: RequestMethod.GET },
         { path: "user/get_my_profile", method: RequestMethod.GET }
       );
   }

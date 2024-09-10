@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
+const Mail_module_1 = require("./modules/Mail.module");
 const NotFound_1 = require("./NotFound");
 const jwt_1 = require("@nestjs/jwt");
 const auth_module_1 = require("./auth/auth.module");
@@ -27,7 +28,7 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, products_module_1.ProductsModule, shipping_module_1.ShippingModule, promo_module_1.PromoModule],
+        imports: [auth_module_1.AuthModule, products_module_1.ProductsModule, shipping_module_1.ShippingModule, promo_module_1.PromoModule, Mail_module_1.MailModule],
         controllers: [app_controller_1.AppController, auth_controller_1.AuthController],
         providers: [
             { provide: core_1.APP_FILTER, useClass: NotFound_1.NotFoundExceptionFilter },
@@ -36,7 +37,7 @@ exports.AppModule = AppModule = __decorate([
             auth_service_1.AuthService,
             auth_utils_service_1.AuthUtilsService,
             jwt_service_1.JwtAuthService,
-            jwt_1.JwtService,
+            jwt_1.JwtService
         ],
     })
 ], AppModule);

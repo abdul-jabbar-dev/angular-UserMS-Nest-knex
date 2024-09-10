@@ -33,7 +33,11 @@ export class ShippingModule implements NestModule {
         { path: "shipping/add_rider", method: RequestMethod.POST },
         { path: "shipping/confirm_rider/:order_id", method: RequestMethod.PUT },
         { path: "shipping/confirm", method: RequestMethod.POST },
-        { path: "shipping/all", method: RequestMethod.GET }
+        { path: "shipping/all", method: RequestMethod.GET },
+        {
+          path: "shipping/confirm_delivery/:orderId",
+          method: RequestMethod.PUT,
+        }
       );
   }
 }

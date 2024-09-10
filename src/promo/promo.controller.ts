@@ -34,7 +34,6 @@ export class PromoController {
       admin: boolean;
     }
   ) {
-    console.log(pageSize, page);
     return this.promoService.findAll(pageSize, page);
   }
 

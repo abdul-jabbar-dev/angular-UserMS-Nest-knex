@@ -18,6 +18,13 @@ export declare class AuthController {
     }>;
     getUser(id: string): Promise<TUserResponse | null>;
     getrider(): Promise<TUserResponse[] | null>;
+    getRiderHistory({ user_id }: {
+        user_id: any;
+    }): Promise<{
+        totalDone: number;
+        totalBenifit: number;
+        totalPending: number;
+    }>;
     registerUser(user: TUser): Promise<{
         data: TUserResponse;
         token: string;
@@ -26,6 +33,10 @@ export declare class AuthController {
         data: TUserResponse;
         token: string;
     }>;
+    send_code_for_reset({ email }: {
+        email: any;
+    }): Promise<TUserResponse[]>;
+    gen_new_pass(id: string, password: any): Promise<number>;
     updateStatus(id: string): Promise<number>;
     updateRole(id: string): Promise<number>;
     deleteUser(id: string): Promise<number>;

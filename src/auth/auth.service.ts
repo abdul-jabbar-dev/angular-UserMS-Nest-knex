@@ -3,13 +3,15 @@ import { AuthUtilsService } from "./../service/auth.utils.service";
 import { TUser, TUserResponse, Tlogin } from "./../types/User";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { KnexService } from "src/service/knex.service";
+import { MailService } from "src/service/mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly knexService: KnexService,
     public utils: AuthUtilsService,
-    public jwt: JwtAuthService
+    public jwt: JwtAuthService,
+    public sendMail: MailService
   ) {}
 
   async getUsers({
@@ -75,6 +77,59 @@ export class AuthService {
       throw new BadRequestException("Could not fetch users");
     }
   }
+  async getRiderHistory(user_id: number) {
+    try {
+      const user = await this.knexService
+        .getKnex()
+        .table("_users")
+        .where({ role: "rider", id: user_id })
+        .first();
+
+      if (!user) {
+        throw new BadRequestException("User not found or is not a rider");
+      }
+
+      const notDeliveryCount = await this.knexService
+        .getKnex()
+        .table("_delivery")
+        .where({ delivery_boy_id: user_id })
+        .andWhereNot("delivery_status", "delivery")
+        .count("* as totalPending");
+
+      const totalPending = parseInt(
+        notDeliveryCount[0]?.totalPending || "0",
+        10
+      );
+      const totalBenifitResult = await this.knexService
+        .getKnex()
+        .table("_delivery")
+        .leftJoin("_shippingOrder", "_delivery.order_id", "_shippingOrder.id")
+        .where({
+          "_delivery.delivery_boy_id": user_id,
+          "_delivery.delivery_status": "delivery",
+        })
+        .sum("_shippingOrder.shipping_cost as totalBenifit");
+
+      const totalBenifit = parseFloat(
+        totalBenifitResult[0]?.totalBenifit || "0"
+      );
+      const totalDoneCount = await this.knexService
+        .getKnex()
+        .table("_delivery")
+        .where({ delivery_boy_id: user_id })
+        .andWhere("delivery_status", "delivery")
+        .count("* as totalDone");
+
+      const totalDone = parseInt(totalDoneCount[0]?.totalDone || "0", 10);
+
+      console.log({ totalDone, totalBenifit, totalPending });
+
+      return { totalDone, totalBenifit, totalPending };
+    } catch (error) {
+      console.error("Error fetching rider history:", error);
+      throw new BadRequestException("Could not fetch rider history");
+    }
+  }
 
   async getUserById(id: number): Promise<TUserResponse | null> {
     try {
@@ -119,8 +174,9 @@ export class AuthService {
         throw new BadRequestException("User not register");
       } else {
         if (exist.status === "active") {
- 
-          if (await this.utils.compareHashed(exist.password, userInfo.password)) {
+          if (
+            await this.utils.compareHashed(exist.password, userInfo.password)
+          ) {
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
@@ -131,7 +187,6 @@ export class AuthService {
               }),
             };
           } else {
-
             throw new BadRequestException("Invalid Password!");
           }
         } else {
@@ -141,6 +196,76 @@ export class AuthService {
         }
       }
       return loginMyUser;
+    } catch (error) {
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException("Could not fetch user");
+    }
+  }
+  async gen_new_pass(id: string, { password }) {
+    try {
+      const exist: TUserResponse = await this.knexService
+        .getKnex()
+        .table<TUserResponse>("_users")
+        .where({ id: Number(id) })
+        .first();
+
+      if (!exist) {
+        throw new BadRequestException("User not found");
+      } else {
+        const genNewPass = await this.utils.makeHashed(password);
+        if (!genNewPass) {
+          throw new BadRequestException("Passwor Encryption error");
+        } else {
+          return await this.knexService
+            .getKnex()
+            .table<TUserResponse>("_users")
+            .where({ id: Number(id) })
+            .update({ password: genNewPass })
+            
+        }
+      }
+    } catch (error) {
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException("Could not fetch user");
+    }
+  }
+  async send_code_for_reset(email: string) {
+    try {
+      const exist: TUserResponse = await this.knexService
+        .getKnex()
+        .table<TUserResponse>("_users")
+        .where({ email })
+        .first();
+
+      if (!exist) {
+        throw new BadRequestException("User not register");
+      } else {
+        const genCode = Math.floor(100000 + Math.random() * 900000);
+        const exist = await this.knexService
+          .getKnex()
+          .table<TUserResponse>("_users")
+          .where({ email })
+          .first()
+          .update({ reset_code: genCode.toString() })
+          .returning("*");
+        if (!exist) {
+          throw new BadRequestException("Reset code generation error");
+        }
+        const responseMail = await this.sendMail.sendResetPasswordMail(
+          "abdul.jabbar.dev@gmail.com",
+          "abdul jabbar",
+          genCode.toString()
+        );
+        if (!responseMail.messageId) {
+          throw new BadRequestException("Reset code ");
+        } else {
+          return exist;
+        }
+      }
     } catch (error) {
       if (error.message) {
         throw new BadRequestException(error.message);

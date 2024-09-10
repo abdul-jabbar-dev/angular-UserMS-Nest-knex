@@ -46,7 +46,7 @@ export class ShippingController {
     return result;
   }
   @Post("/add_rider")
-  async addRider(@Body() createShipping) { 
+  async addRider(@Body() createShipping) {
     const result = await this.shippingService.addrider(createShipping);
 
     return result;
@@ -70,6 +70,11 @@ export class ShippingController {
   @Put("addpromo/:orderId")
   addPromo(@Param("orderId") id: string, @Body() updateShipping) {
     return this.shippingService.addPromo(+id, updateShipping);
+  }
+
+  @Put("confirm_delivery/:orderId")
+  confirmDelivery(@Param("orderId") id: string, @Body() {code}) { 
+    return this.shippingService.confirmDelivery(+id, code);
   }
 
   @Delete(":id")

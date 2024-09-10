@@ -20,7 +20,8 @@ export declare class ShippingService {
     findAllOrderRider(user_id: string): Promise<any[]>;
     findAOrderRider(user_id: string, order_id: string): Promise<any[]>;
     findOne(id: number): Promise<any>;
-    rider_confirm(delivery: any): Promise<any>;
+    rider_confirm(delivery: any): Promise<string>;
+    confirmDelivery(id: number, code: any): Promise<any>;
     update(id: number, updateShippingDto: any): string;
     remove(id: number): string;
 }

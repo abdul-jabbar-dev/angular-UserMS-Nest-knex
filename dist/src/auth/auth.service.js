@@ -14,11 +14,13 @@ const jwt_service_1 = require("../service/jwt.service");
 const auth_utils_service_1 = require("./../service/auth.utils.service");
 const common_1 = require("@nestjs/common");
 const knex_service_1 = require("../service/knex.service");
+const mail_service_1 = require("../service/mail.service");
 let AuthService = class AuthService {
-    constructor(knexService, utils, jwt) {
+    constructor(knexService, utils, jwt, sendMail) {
         this.knexService = knexService;
         this.utils = utils;
         this.jwt = jwt;
+        this.sendMail = sendMail;
     }
     async getUsers({ pageSize, page, role, }) {
         const offset = (Number(page) - 1) * Number(pageSize);
@@ -63,6 +65,48 @@ let AuthService = class AuthService {
         }
         catch (error) {
             throw new common_1.BadRequestException("Could not fetch users");
+        }
+    }
+    async getRiderHistory(user_id) {
+        try {
+            const user = await this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ role: "rider", id: user_id })
+                .first();
+            if (!user) {
+                throw new common_1.BadRequestException("User not found or is not a rider");
+            }
+            const notDeliveryCount = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ delivery_boy_id: user_id })
+                .andWhereNot("delivery_status", "delivery")
+                .count("* as totalPending");
+            const totalPending = parseInt(notDeliveryCount[0]?.totalPending || "0", 10);
+            const totalBenifitResult = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .leftJoin("_shippingOrder", "_delivery.order_id", "_shippingOrder.id")
+                .where({
+                "_delivery.delivery_boy_id": user_id,
+                "_delivery.delivery_status": "delivery",
+            })
+                .sum("_shippingOrder.shipping_cost as totalBenifit");
+            const totalBenifit = parseFloat(totalBenifitResult[0]?.totalBenifit || "0");
+            const totalDoneCount = await this.knexService
+                .getKnex()
+                .table("_delivery")
+                .where({ delivery_boy_id: user_id })
+                .andWhere("delivery_status", "delivery")
+                .count("* as totalDone");
+            const totalDone = parseInt(totalDoneCount[0]?.totalDone || "0", 10);
+            console.log({ totalDone, totalBenifit, totalPending });
+            return { totalDone, totalBenifit, totalPending };
+        }
+        catch (error) {
+            console.error("Error fetching rider history:", error);
+            throw new common_1.BadRequestException("Could not fetch rider history");
         }
     }
     async getUserById(id) {
@@ -126,6 +170,75 @@ let AuthService = class AuthService {
                 }
             }
             return loginMyUser;
+        }
+        catch (error) {
+            if (error.message) {
+                throw new common_1.BadRequestException(error.message);
+            }
+            throw new common_1.BadRequestException("Could not fetch user");
+        }
+    }
+    async gen_new_pass(id, { password }) {
+        try {
+            const exist = await this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ id: Number(id) })
+                .first();
+            if (!exist) {
+                throw new common_1.BadRequestException("User not found");
+            }
+            else {
+                const genNewPass = await this.utils.makeHashed(password);
+                if (!genNewPass) {
+                    throw new common_1.BadRequestException("Passwor Encryption error");
+                }
+                else {
+                    return await this.knexService
+                        .getKnex()
+                        .table("_users")
+                        .where({ id: Number(id) })
+                        .update({ password: genNewPass });
+                }
+            }
+        }
+        catch (error) {
+            if (error.message) {
+                throw new common_1.BadRequestException(error.message);
+            }
+            throw new common_1.BadRequestException("Could not fetch user");
+        }
+    }
+    async send_code_for_reset(email) {
+        try {
+            const exist = await this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ email })
+                .first();
+            if (!exist) {
+                throw new common_1.BadRequestException("User not register");
+            }
+            else {
+                const genCode = Math.floor(100000 + Math.random() * 900000);
+                const exist = await this.knexService
+                    .getKnex()
+                    .table("_users")
+                    .where({ email })
+                    .first()
+                    .update({ reset_code: genCode.toString() })
+                    .returning("*");
+                if (!exist) {
+                    throw new common_1.BadRequestException("Reset code generation error");
+                }
+                const responseMail = await this.sendMail.sendResetPasswordMail("abdul.jabbar.dev@gmail.com", "abdul jabbar", genCode.toString());
+                if (!responseMail.messageId) {
+                    throw new common_1.BadRequestException("Reset code ");
+                }
+                else {
+                    return exist;
+                }
+            }
         }
         catch (error) {
             if (error.message) {
@@ -275,6 +388,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [knex_service_1.KnexService,
         auth_utils_service_1.AuthUtilsService,
-        jwt_service_1.JwtAuthService])
+        jwt_service_1.JwtAuthService,
+        mail_service_1.MailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

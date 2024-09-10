@@ -5,11 +5,9 @@ import {
   Delete,
   Get,
   Param,
-  ParamData,
   Post,
   Put,
   Query,
-  Req,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { TUser, TUserResponse, Tlogin } from "src/types/User";
@@ -58,6 +56,10 @@ export class AuthController {
   async getrider(): Promise<TUserResponse[] | null> {
     return await this.authService.getRiders();
   }
+  @Get("rider/get_history")
+  async getRiderHistory(@Body() { user_id }) {
+    return await this.authService.getRiderHistory(user_id);
+  }
 
   @Post("register")
   async registerUser(
@@ -72,11 +74,31 @@ export class AuthController {
   @Post("login")
   async loginUser(@Body() user: Tlogin) {
     try {
-     return await this.authService.loginUser(user)
-    } catch (error) { 
+      return await this.authService.loginUser(user);
+    } catch (error) {
       throw new BadRequestException(error);
     }
   }
+
+  @Post("send_code")
+  async send_code_for_reset(@Body() { email }) {
+    
+    try {
+      return await this.authService.send_code_for_reset(email);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+  @Post("send_new_password/:id")
+  async gen_new_pass(@Param("id") id: string, @Body() password) {
+     
+    try {
+      return await this.authService.gen_new_pass(id,password);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
   @Put("status_update/:id")
   async updateStatus(@Param("id") id: string) {
     return await this.authService.userStatusUpdate(id);
