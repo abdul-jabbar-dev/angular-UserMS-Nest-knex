@@ -20,7 +20,7 @@ export class AuthController {
   async myprofile(@Body() { user_id }) {
     try {
       return await this.authService.UserProfile(user_id);
-    } catch (error) {
+    } catch (error) { 
       throw new BadRequestException(error);
     }
   }
@@ -60,7 +60,6 @@ export class AuthController {
   async getRiderHistory(@Body() { user_id }) {
     return await this.authService.getRiderHistory(user_id);
   }
-
   @Post("register")
   async registerUser(
     @Body() user: TUser
@@ -79,10 +78,8 @@ export class AuthController {
       throw new BadRequestException(error);
     }
   }
-
   @Post("send_code")
   async send_code_for_reset(@Body() { email }) {
-    
     try {
       return await this.authService.send_code_for_reset(email);
     } catch (error) {
@@ -91,9 +88,8 @@ export class AuthController {
   }
   @Post("send_new_password/:id")
   async gen_new_pass(@Param("id") id: string, @Body() password) {
-     
     try {
-      return await this.authService.gen_new_pass(id,password);
+      return await this.authService.gen_new_pass(id, password);
     } catch (error) {
       throw new BadRequestException(error);
     }

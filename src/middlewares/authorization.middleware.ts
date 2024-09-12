@@ -22,6 +22,7 @@ export class AuthorizationMiddleware implements NestMiddleware {
           req.route.path === "/product/create" ||
           req.route.path === "/shipping" ||
           req.route.path === "/user/get_my_profile" ||
+          req.route.path === "/user/get_user/:id" ||
           req.route.path === "/shipping/get_rider_order" ||
           req.route.path === "/shipping/:product_id" ||
           req.route.path === "/shipping/confirm_delivery/:orderId" ||
@@ -40,7 +41,10 @@ export class AuthorizationMiddleware implements NestMiddleware {
         throw new UnauthorizedException("Login Required!");
       }
     } catch (error) {
-      throw new UnauthorizedException("error");
+      if (error.response.message === "Login Required!") {
+        throw new UnauthorizedException("Login Required!");
+      }
+      throw new UnauthorizedException(error);
     }
   }
 }

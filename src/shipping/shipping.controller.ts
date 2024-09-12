@@ -59,6 +59,7 @@ export class ShippingController {
 
   @Get(":product_id")
   async findOne(@Param("product_id") id: string) {
+ 
     return await this.shippingService.findOne(+id);
   }
 

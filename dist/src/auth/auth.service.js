@@ -369,13 +369,17 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException(error.message);
         }
     }
-    async UserUpdateProfile({ email, password, user_id, username, ...userInfo }) {
+    async UserUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }) {
         try {
+            if (new_password) {
+                const dyc_new_password = await this.utils.makeHashed(new_password);
+                new_password = dyc_new_password;
+            }
             const result = await this.knexService
                 .getKnex()
                 .table("_users")
                 .where({ id: user_id })
-                .update({ ...userInfo });
+                .update({ age, first_name, last_name, phone, password: new_password });
             return result;
         }
         catch (error) {

@@ -43,8 +43,9 @@ export declare class AuthService {
     userUpdateRole(id: string): Promise<number>;
     UserDeleteRoute(id: string): Promise<number>;
     UserProfile(id: string): Promise<any>;
-    UserUpdateProfile({ email, password, user_id, username, ...userInfo }: Partial<TUser & {
+    UserUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }: Partial<TUser & {
         user_id: any;
         username: string;
+        new_password?: string;
     }>): Promise<number>;
 }

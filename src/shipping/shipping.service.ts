@@ -311,6 +311,7 @@ export class ShippingService {
 
   async findOne(id: number) {
     try {
+      console.log(id);
       const result = await this.knexService
         .getKnex()
         .table("_shippingOrder")
@@ -325,6 +326,7 @@ export class ShippingService {
           "_users.username",
           "_shippingOrder.id  as order_id",
           "_users.email",
+          "_delivery.*",
           "_shippingOrder.id as order_id",
           "_shippingOrder.created_at as shipping_order_created_at",
           "_shippingOrder.updated_at as shipping_updated_at"
@@ -333,9 +335,10 @@ export class ShippingService {
         .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
         .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
         .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
-        .where("_shippingOrder.product_id", id)
+        .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
+        .where("_delivery.id", id)
         .first();
-
+      console.log(result);
       return result;
     } catch (error) {
       throw error;

@@ -222,8 +222,7 @@ export class AuthService {
             .getKnex()
             .table<TUserResponse>("_users")
             .where({ id: Number(id) })
-            .update({ password: genNewPass })
-            
+            .update({ password: genNewPass });
         }
       }
     } catch (error) {
@@ -396,18 +395,25 @@ export class AuthService {
     }
   }
   async UserUpdateProfile({
-    email,
-    password,
+    new_password,
+    age,
+    first_name,
+    last_name,
     user_id,
-    username,
-    ...userInfo
-  }: Partial<TUser & { user_id: any; username: string }>) {
+    phone,
+  }: Partial<
+    TUser & { user_id: any; username: string; new_password?: string }
+  >) {
     try {
+      if (new_password) {
+        const dyc_new_password = await this.utils.makeHashed(new_password);
+        new_password = dyc_new_password;
+      }
       const result = await this.knexService
         .getKnex()
         .table("_users")
         .where({ id: user_id })
-        .update({ ...userInfo });
+        .update({ age, first_name, last_name, phone, password: new_password });
       return result;
     } catch (error) {
       throw new BadRequestException(error.message);

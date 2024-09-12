@@ -1,3 +1,4 @@
+import { MyGateway } from './Getway';
 import { MailModule } from './modules/Mail.module';
 import { MailerService } from '@nestjs-modules/mailer';
 import { MailService } from './service/mail.service';
@@ -23,6 +24,7 @@ import { PromoModule } from "./promo/promo.module";
   imports: [AuthModule, ProductsModule, ShippingModule, PromoModule,MailModule],
   controllers: [AppController, AuthController],
   providers: [
+    // MyGateway,
     { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
     AppService,
     KnexService,
