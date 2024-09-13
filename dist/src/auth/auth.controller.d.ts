@@ -17,7 +17,7 @@ export declare class AuthController {
         pageSize: number;
     }>;
     getUser(id: string): Promise<TUserResponse | null>;
-    getrider(): Promise<TUserResponse[] | null>;
+    getRider(): Promise<TUserResponse[] | null>;
     getRiderHistory({ user_id }: {
         user_id: any;
     }): Promise<{
@@ -33,13 +33,21 @@ export declare class AuthController {
         data: TUserResponse;
         token: string;
     }>;
-    send_code_for_reset({ email }: {
+    sendCodeForReset({ email }: {
         email: any;
     }): Promise<TUserResponse[]>;
-    gen_new_pass(id: string, password: any): Promise<number>;
+    genNewPass(id: string, password: any): Promise<number>;
     updateStatus(id: string): Promise<number>;
+    updatePassword({ oldPassword, newPassword, user_id, }: {
+        oldPassword: string;
+        newPassword: string;
+        user_id: string | number;
+    }): Promise<Pick<TUserResponse, "id">[]>;
     updateRole(id: string): Promise<number>;
-    deleteUser(id: string): Promise<number>;
+    deleteUser({ user_id }: {
+        user_id: any;
+    }): Promise<number>;
+    deleteUserByAdmin(id: string): Promise<number>;
     updateProfile(user: Partial<TUser & {
         user_id: string;
     }>): Promise<number>;

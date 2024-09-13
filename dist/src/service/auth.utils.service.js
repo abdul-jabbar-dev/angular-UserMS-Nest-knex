@@ -23,8 +23,8 @@ let AuthUtilsService = class AuthUtilsService {
     async makeHashed(pass) {
         return await (0, bcrypt_1.hash)(pass, this.solt);
     }
-    async compareHashed(hashedPass, rowPass) {
-        return await (0, bcrypt_1.compare)(rowPass, hashedPass);
+    async compareHashed(hashedPass, newPass) {
+        return await (0, bcrypt_1.compare)(newPass, hashedPass);
     }
     async generateUniqueUsername(firstName, lastName) {
         let username;

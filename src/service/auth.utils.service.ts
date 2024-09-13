@@ -11,8 +11,8 @@ export class AuthUtilsService {
   async makeHashed(pass: string) {
     return await hash(pass, this.solt);
   }
-  async compareHashed(hashedPass: string, rowPass: string) {
-    return await compare(rowPass, hashedPass);
+  async compareHashed(hashedPass: string, newPass: string) {
+    return await compare(newPass, hashedPass);
   }
   async generateUniqueUsername(
     firstName: string,

@@ -21,7 +21,7 @@ let AuthController = class AuthController {
     }
     async myprofile({ user_id }) {
         try {
-            return await this.authService.UserProfile(user_id);
+            return await this.authService.userProfile(user_id);
         }
         catch (error) {
             throw new common_1.BadRequestException(error);
@@ -34,7 +34,7 @@ let AuthController = class AuthController {
         const userId = parseInt(id);
         return await this.authService.getUserById(userId);
     }
-    async getrider() {
+    async getRider() {
         return await this.authService.getRiders();
     }
     async getRiderHistory({ user_id }) {
@@ -56,17 +56,17 @@ let AuthController = class AuthController {
             throw new common_1.BadRequestException(error);
         }
     }
-    async send_code_for_reset({ email }) {
+    async sendCodeForReset({ email }) {
         try {
-            return await this.authService.send_code_for_reset(email);
+            return await this.authService.sendCodeForReset(email);
         }
         catch (error) {
             throw new common_1.BadRequestException(error);
         }
     }
-    async gen_new_pass(id, password) {
+    async genNewPass(id, password) {
         try {
-            return await this.authService.gen_new_pass(id, password);
+            return await this.authService.genNewPass(id, password);
         }
         catch (error) {
             throw new common_1.BadRequestException(error);
@@ -75,15 +75,21 @@ let AuthController = class AuthController {
     async updateStatus(id) {
         return await this.authService.userStatusUpdate(id);
     }
+    async updatePassword({ oldPassword, newPassword, user_id, }) {
+        return await this.authService.updatePassword(oldPassword, newPassword, user_id);
+    }
     async updateRole(id) {
         return await this.authService.userUpdateRole(id);
     }
-    async deleteUser(id) {
-        return await this.authService.UserDeleteRoute(id);
+    async deleteUser({ user_id }) {
+        return await this.authService.userDeleteRoute(user_id);
+    }
+    async deleteUserByAdmin(id) {
+        return await this.authService.userDeleteRoute(id);
     }
     async updateProfile(user) {
         try {
-            const result = await this.authService.UserUpdateProfile(user);
+            const result = await this.authService.userUpdateProfile(user);
             return result;
         }
         catch (error) {
@@ -118,7 +124,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "getrider", null);
+], AuthController.prototype, "getRider", null);
 __decorate([
     (0, common_1.Get)("rider/get_history"),
     __param(0, (0, common_1.Body)()),
@@ -146,7 +152,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "send_code_for_reset", null);
+], AuthController.prototype, "sendCodeForReset", null);
 __decorate([
     (0, common_1.Post)("send_new_password/:id"),
     __param(0, (0, common_1.Param)("id")),
@@ -154,7 +160,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "gen_new_pass", null);
+], AuthController.prototype, "genNewPass", null);
 __decorate([
     (0, common_1.Put)("status_update/:id"),
     __param(0, (0, common_1.Param)("id")),
@@ -163,6 +169,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "updateStatus", null);
 __decorate([
+    (0, common_1.Put)("update_password"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updatePassword", null);
+__decorate([
     (0, common_1.Put)("role_update/:id"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -170,12 +183,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "updateRole", null);
 __decorate([
+    (0, common_1.Delete)("delete"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "deleteUser", null);
+__decorate([
     (0, common_1.Delete)("delete/:id"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "deleteUser", null);
+], AuthController.prototype, "deleteUserByAdmin", null);
 __decorate([
     (0, common_1.Put)("update_profile"),
     __param(0, (0, common_1.Body)()),

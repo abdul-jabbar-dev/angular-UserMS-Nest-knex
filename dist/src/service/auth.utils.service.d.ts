@@ -4,6 +4,6 @@ export declare class AuthUtilsService {
     constructor(knexService: KnexService);
     private solt;
     makeHashed(pass: string): Promise<string>;
-    compareHashed(hashedPass: string, rowPass: string): Promise<boolean>;
+    compareHashed(hashedPass: string, newPass: string): Promise<boolean>;
     generateUniqueUsername(firstName: string, lastName: string): Promise<string>;
 }

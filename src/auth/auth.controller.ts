@@ -19,8 +19,8 @@ export class AuthController {
   @Get("get_my_profile")
   async myprofile(@Body() { user_id }) {
     try {
-      return await this.authService.UserProfile(user_id);
-    } catch (error) { 
+      return await this.authService.userProfile(user_id);
+    } catch (error) {
       throw new BadRequestException(error);
     }
   }
@@ -53,7 +53,7 @@ export class AuthController {
   }
 
   @Get("get_rider")
-  async getrider(): Promise<TUserResponse[] | null> {
+  async getRider(): Promise<TUserResponse[] | null> {
     return await this.authService.getRiders();
   }
   @Get("rider/get_history")
@@ -79,17 +79,17 @@ export class AuthController {
     }
   }
   @Post("send_code")
-  async send_code_for_reset(@Body() { email }) {
+  async sendCodeForReset(@Body() { email }) {
     try {
-      return await this.authService.send_code_for_reset(email);
+      return await this.authService.sendCodeForReset(email);
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
   @Post("send_new_password/:id")
-  async gen_new_pass(@Param("id") id: string, @Body() password) {
+  async genNewPass(@Param("id") id: string, @Body() password) {
     try {
-      return await this.authService.gen_new_pass(id, password);
+      return await this.authService.genNewPass(id, password);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -99,19 +99,42 @@ export class AuthController {
   async updateStatus(@Param("id") id: string) {
     return await this.authService.userStatusUpdate(id);
   }
+  @Put("update_password")
+  async updatePassword(
+    @Body()
+    {
+      oldPassword,
+      newPassword,
+      user_id,
+    }: {
+      oldPassword: string;
+      newPassword: string;
+      user_id: string | number;
+    }
+  ) {
+    return await this.authService.updatePassword(
+      oldPassword,
+      newPassword,
+      user_id
+    );
+  }
   @Put("role_update/:id")
   async updateRole(@Param("id") id: string) {
     return await this.authService.userUpdateRole(id);
   }
+  @Delete("delete")
+  async deleteUser(@Body() { user_id }) {
+    return await this.authService.userDeleteRoute(user_id);
+  }
   @Delete("delete/:id")
-  async deleteUser(@Param("id") id: string) {
-    return await this.authService.UserDeleteRoute(id);
+  async deleteUserByAdmin(@Param("id") id: string) {
+    return await this.authService.userDeleteRoute(id);
   }
 
   @Put("update_profile")
   async updateProfile(@Body() user: Partial<TUser & { user_id: string }>) {
     try {
-      const result = await this.authService.UserUpdateProfile(user);
+      const result = await this.authService.userUpdateProfile(user);
       return result;
     } catch (error) {
       throw new BadRequestException(error);

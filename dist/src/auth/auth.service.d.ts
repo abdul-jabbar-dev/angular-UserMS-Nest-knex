@@ -31,21 +31,23 @@ export declare class AuthService {
         data: TUserResponse;
         token: string;
     }>;
-    gen_new_pass(id: string, { password }: {
+    genNewPass(id: string, { password }: {
         password: any;
     }): Promise<number>;
-    send_code_for_reset(email: string): Promise<TUserResponse[]>;
+    sendCodeForReset(email: string): Promise<TUserResponse[]>;
     registerUser(userInfo: TUser): Promise<{
         data: TUserResponse;
         token: string;
     } | null>;
     userStatusUpdate(id: string): Promise<number>;
     userUpdateRole(id: string): Promise<number>;
-    UserDeleteRoute(id: string): Promise<number>;
-    UserProfile(id: string): Promise<any>;
-    UserUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }: Partial<TUser & {
+    userDeleteRoute(id: string): Promise<number>;
+    userProfile(id: string): Promise<any>;
+    userUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }: Partial<TUser & {
         user_id: any;
         username: string;
         new_password?: string;
     }>): Promise<number>;
+    updatePassword(oldPassword: string, newPassword: string, user_id: string | number): Promise<Pick<TUserResponse, "id">[]>;
+    deleteUser(oldPassword: string, newPassword: string, user_id: string | number): Promise<Pick<TUserResponse, "id">[]>;
 }

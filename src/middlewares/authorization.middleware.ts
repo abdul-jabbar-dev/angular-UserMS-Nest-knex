@@ -28,6 +28,8 @@ export class AuthorizationMiddleware implements NestMiddleware {
           req.route.path === "/shipping/confirm_delivery/:orderId" ||
           req.route.path === "/shipping/confirm_rider/:order_id" ||
           req.route.path === "/user/rider/get_history" ||
+          req.route.path === "/user/delete" ||
+          req.route.path === "/user/update_password" ||
           req.route.path === "/shipping/confirm" ||
           req.route.path === "/product/my_products" ||
           req.route.path === "/user/update_profile"

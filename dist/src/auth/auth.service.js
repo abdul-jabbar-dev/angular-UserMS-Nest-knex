@@ -178,7 +178,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException("Could not fetch user");
         }
     }
-    async gen_new_pass(id, { password }) {
+    async genNewPass(id, { password }) {
         try {
             const exist = await this.knexService
                 .getKnex()
@@ -209,7 +209,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException("Could not fetch user");
         }
     }
-    async send_code_for_reset(email) {
+    async sendCodeForReset(email) {
         try {
             const exist = await this.knexService
                 .getKnex()
@@ -343,7 +343,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException(error.message);
         }
     }
-    async UserDeleteRoute(id) {
+    async userDeleteRoute(id) {
         try {
             const result = await this.knexService
                 .getKnex()
@@ -356,7 +356,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException(error.message);
         }
     }
-    async UserProfile(id) {
+    async userProfile(id) {
         try {
             const result = await this.knexService
                 .getKnex()
@@ -369,7 +369,7 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException(error.message);
         }
     }
-    async UserUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }) {
+    async userUpdateProfile({ new_password, age, first_name, last_name, user_id, phone, }) {
         try {
             if (new_password) {
                 const dyc_new_password = await this.utils.makeHashed(new_password);
@@ -381,6 +381,74 @@ let AuthService = class AuthService {
                 .where({ id: user_id })
                 .update({ age, first_name, last_name, phone, password: new_password });
             return result;
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
+    }
+    async updatePassword(oldPassword, newPassword, user_id) {
+        try {
+            const user = await this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ id: Number(user_id) })
+                .returning("*")
+                .first();
+            if (!user) {
+                throw new common_1.UnauthorizedException("User not exist");
+            }
+            else {
+                const comparePassword = await this.utils.compareHashed(user.password, oldPassword);
+                if (!comparePassword) {
+                    throw new common_1.UnprocessableEntityException("Password didn't match");
+                }
+                else {
+                    const dyc_new_password = await this.utils.makeHashed(newPassword);
+                    const result = await this.knexService
+                        .getKnex()
+                        .table("_users")
+                        .where({ id: user.id }).first()
+                        .update({
+                        password: dyc_new_password,
+                    })
+                        .returning("id");
+                    return result;
+                }
+            }
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
+    }
+    async deleteUser(oldPassword, newPassword, user_id) {
+        try {
+            const user = await this.knexService
+                .getKnex()
+                .table("_users")
+                .where({ id: Number(user_id) })
+                .returning("*")
+                .first();
+            if (!user) {
+                throw new common_1.UnauthorizedException("User not exist");
+            }
+            else {
+                const comparePassword = await this.utils.compareHashed(user.password, oldPassword);
+                if (!comparePassword) {
+                    throw new common_1.UnprocessableEntityException("Password didn't match");
+                }
+                else {
+                    const dyc_new_password = await this.utils.makeHashed(newPassword);
+                    const result = await this.knexService
+                        .getKnex()
+                        .table("_users")
+                        .where({ id: user.id }).first()
+                        .update({
+                        password: dyc_new_password,
+                    })
+                        .returning("id");
+                    return result;
+                }
+            }
         }
         catch (error) {
             throw new common_1.BadRequestException(error.message);

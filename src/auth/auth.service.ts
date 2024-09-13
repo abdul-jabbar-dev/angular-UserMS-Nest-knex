@@ -1,7 +1,12 @@
 import { JwtAuthService } from "src/service/jwt.service";
 import { AuthUtilsService } from "./../service/auth.utils.service";
 import { TUser, TUserResponse, Tlogin } from "./../types/User";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from "@nestjs/common";
 import { KnexService } from "src/service/knex.service";
 import { MailService } from "src/service/mail.service";
 
@@ -203,7 +208,7 @@ export class AuthService {
       throw new BadRequestException("Could not fetch user");
     }
   }
-  async gen_new_pass(id: string, { password }) {
+  async genNewPass(id: string, { password }) {
     try {
       const exist: TUserResponse = await this.knexService
         .getKnex()
@@ -232,7 +237,7 @@ export class AuthService {
       throw new BadRequestException("Could not fetch user");
     }
   }
-  async send_code_for_reset(email: string) {
+  async sendCodeForReset(email: string) {
     try {
       const exist: TUserResponse = await this.knexService
         .getKnex()
@@ -369,7 +374,7 @@ export class AuthService {
     }
   }
 
-  async UserDeleteRoute(id: string) {
+  async userDeleteRoute(id: string) {
     try {
       const result = await this.knexService
         .getKnex()
@@ -382,7 +387,7 @@ export class AuthService {
     }
   }
 
-  async UserProfile(id: string) {
+  async userProfile(id: string) {
     try {
       const result = await this.knexService
         .getKnex()
@@ -394,7 +399,8 @@ export class AuthService {
       throw new BadRequestException(error.message);
     }
   }
-  async UserUpdateProfile({
+
+  async userUpdateProfile({
     new_password,
     age,
     first_name,
@@ -415,6 +421,82 @@ export class AuthService {
         .where({ id: user_id })
         .update({ age, first_name, last_name, phone, password: new_password });
       return result;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+  async updatePassword(
+    oldPassword: string,
+    newPassword: string,
+    user_id: string | number
+  ) {
+    try {
+      const user: TUserResponse = await this.knexService
+        .getKnex()
+        .table<TUserResponse>("_users")
+        .where({ id: Number(user_id) })
+        .returning("*")
+        .first();
+      if (!user) {
+        throw new UnauthorizedException("User not exist");
+      } else {
+        const comparePassword = await this.utils.compareHashed(
+          user.password,
+          oldPassword
+        );
+        if (!comparePassword) {
+          throw new UnprocessableEntityException("Password didn't match");
+        } else {
+          const dyc_new_password = await this.utils.makeHashed(newPassword);
+          const result = await this.knexService
+            .getKnex()
+            .table<TUserResponse>("_users")
+            .where({ id: user.id }).first()
+            .update({
+              password: dyc_new_password,
+            })
+            .returning("id");
+          return result;
+        }
+      }
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+  async deleteUser(
+    oldPassword: string,
+    newPassword: string,
+    user_id: string | number
+  ) {
+    try {
+      const user: TUserResponse = await this.knexService
+        .getKnex()
+        .table<TUserResponse>("_users")
+        .where({ id: Number(user_id) })
+        .returning("*")
+        .first();
+      if (!user) {
+        throw new UnauthorizedException("User not exist");
+      } else {
+        const comparePassword = await this.utils.compareHashed(
+          user.password,
+          oldPassword
+        );
+        if (!comparePassword) {
+          throw new UnprocessableEntityException("Password didn't match");
+        } else {
+          const dyc_new_password = await this.utils.makeHashed(newPassword);
+          const result = await this.knexService
+            .getKnex()
+            .table<TUserResponse>("_users")
+            .where({ id: user.id }).first()
+            .update({
+              password: dyc_new_password,
+            })
+            .returning("id");
+          return result;
+        }
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
