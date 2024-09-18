@@ -9,8 +9,14 @@ import {
 } from "@nestjs/websockets";
 import { Server } from "http";
 import { Socket } from "socket.io";
-
-@WebSocketGateway()
+@WebSocketGateway({
+  path: "/realtime",
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+})
 export class MyGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -25,13 +31,20 @@ export class MyGateway
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    const userId = client.handshake.query.userID as string;
-    this.clients.set(userId, client);
+    const userId = client.handshake.query.userId as string;
 
-    this.logger.log(`Client connected: ${client.id}, userID:${userId}`);
+    if (!userId) {
+      this.logger.error(`Connection failed: userID missing from handshake`);
+      client.emit("error", "userID is required to connect");
+      client.disconnect(true);
+      return;
+    }
+
+    this.clients.set(userId, client);
+    this.logger.log(`Client connected: ${client.id}, userID: ${userId}`);
     client.emit("connection", "Welcome to the WebSocket server");
 
-    this.sendActiveUsers(client);
+    this.broadcastActiveUsers();
   }
 
   handleDisconnect(client: Socket) {
@@ -39,7 +52,7 @@ export class MyGateway
       if (value.id === client.id) {
         this.clients.delete(key);
       }
-      this.sendActiveUsers(client);
+      this.broadcastActiveUsers();
     });
     this.logger.log(`Client disconnected: ${client.id}`);
   }
@@ -58,18 +71,22 @@ export class MyGateway
     const targetClient = this.clients.get(data.userId);
     if (targetClient) {
       targetClient.emit("privateMessage", data.message);
+      client.emit("privateMessageStatus", "Message delivered");
     } else {
-      client.emit("error", "User not connected");
+      client.emit("privateMessageStatus", "User not connected");
     }
   }
 
-  @SubscribeMessage("getActiveUsers")
-  handleGetActiveUsers(client: Socket): void {
-    this.sendActiveUsers(client);
+  @SubscribeMessage("activeUsers")
+  handleGetActiveUsers(client: Socket) {
+    this.broadcastActiveUsers(); // Send current active users to the client
   }
 
-  sendActiveUsers(client) {
+  protected broadcastActiveUsers() {
     const activeUsers = Array.from(this.clients.keys());
-    client.emit("activeUsers", activeUsers);
+    this.logger.log(
+      `Broadcasting active users: ${JSON.stringify(activeUsers)}`
+    );
+    this.server.emit("activeUsers", activeUsers);
   }
 }

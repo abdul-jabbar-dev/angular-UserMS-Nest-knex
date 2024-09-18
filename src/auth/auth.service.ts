@@ -9,6 +9,28 @@ import {
 } from "@nestjs/common";
 import { KnexService } from "src/service/knex.service";
 import { MailService } from "src/service/mail.service";
+export interface UserLoginInfo {
+  user_id: number;
+  userAgent: string | null;
+  device_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  platform: string | null;
+  location: string | null;
+}
+export interface UserLoginInfoResponse {
+  id: number;
+  user_id: string | null;
+  login_at: Date;
+  userAgent: string | null;
+  device_id: string | null;
+  created_at: Date;
+  updated_at: Date;
+  latitude: number | null;
+  longitude: number | null;
+  platform: string | null;
+  location: string | null;
+}
 
 @Injectable()
 export class AuthService {
@@ -166,7 +188,7 @@ export class AuthService {
     }
   }
 
-  async loginUser(userInfo: Tlogin) {
+  async loginUser(userInfo: { email: string; password: string; meta: any }) {
     try {
       let loginMyUser: { data: TUserResponse; token: string } | null = null;
       const exist: TUserResponse = await this.knexService
@@ -182,6 +204,31 @@ export class AuthService {
           if (
             await this.utils.compareHashed(exist.password, userInfo.password)
           ) {
+            if (userInfo.meta["exist"] && userInfo.meta["storeDevId"]) {
+              const { exist, storeDevId } = userInfo.meta;
+              const permit = await this.knexService
+                .getKnex()
+                .table("_users_login_for")
+                .where({ device_id: storeDevId })
+                .first()
+                .returning("*");
+            } else {
+              console.log(userInfo.meta);
+              const { address, deviceId, userAgent, platform } =
+                userInfo.meta.deviceInfo;
+              const permit = await this.knexService
+                .getKnex()
+                .table<UserLoginInfo>("_users_login_for")
+                .insert({
+                  location: address,
+                  device_id: deviceId,
+                  platform,
+                  userAgent,
+                  user_id: exist.id,
+                })
+                .returning("*");
+            }
+
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
@@ -359,12 +406,20 @@ export class AuthService {
         .table("_users")
         .select(["role", "status"])
         .where({ id });
+      console.log(role, status);
       if (status === "active") {
         const user = await this.knexService
           .getKnex()
           .table("_users")
           .where({ id })
-          .update({ role: role === "admin" ? "subscriber" : "admin" });
+          .update({
+            role:
+              role === "admin"
+                ? "subscriber"
+                : role === "rider"
+                  ? "admin"
+                  : "rider",
+          });
         return user;
       } else {
         throw new Error("User not active");
@@ -451,7 +506,8 @@ export class AuthService {
           const result = await this.knexService
             .getKnex()
             .table<TUserResponse>("_users")
-            .where({ id: user.id }).first()
+            .where({ id: user.id })
+            .first()
             .update({
               password: dyc_new_password,
             })
@@ -489,7 +545,8 @@ export class AuthService {
           const result = await this.knexService
             .getKnex()
             .table<TUserResponse>("_users")
-            .where({ id: user.id }).first()
+            .where({ id: user.id })
+            .first()
             .update({
               password: dyc_new_password,
             })

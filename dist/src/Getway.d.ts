@@ -14,5 +14,5 @@ export declare class MyGateway implements OnGatewayInit, OnGatewayConnection, On
         message: string;
     }): void;
     handleGetActiveUsers(client: Socket): void;
-    sendActiveUsers(client: any): void;
+    protected broadcastActiveUsers(): void;
 }

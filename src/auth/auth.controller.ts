@@ -71,9 +71,12 @@ export class AuthController {
     }
   }
   @Post("login")
-  async loginUser(@Body() user: Tlogin) {
-    try {
-      return await this.authService.loginUser(user);
+  async loginUser(
+    @Body()
+    { email, password, meta }: { email: string; password: string; meta: any }
+  ) {
+    try { 
+      return await this.authService.loginUser({ email, password, meta });
     } catch (error) {
       throw new BadRequestException(error);
     }

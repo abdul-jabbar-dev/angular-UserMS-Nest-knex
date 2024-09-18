@@ -24,18 +24,24 @@ let MyGateway = class MyGateway {
         console.log("WebSocket Gateway Initialized");
     }
     handleConnection(client, ...args) {
-        const userId = client.handshake.query.userID;
+        const userId = client.handshake.query.userId;
+        if (!userId) {
+            this.logger.error(`Connection failed: userID missing from handshake`);
+            client.emit("error", "userID is required to connect");
+            client.disconnect(true);
+            return;
+        }
         this.clients.set(userId, client);
-        this.logger.log(`Client connected: ${client.id}, userID:${userId}`);
+        this.logger.log(`Client connected: ${client.id}, userID: ${userId}`);
         client.emit("connection", "Welcome to the WebSocket server");
-        this.sendActiveUsers(client);
+        this.broadcastActiveUsers();
     }
     handleDisconnect(client) {
         this.clients.forEach((value, key) => {
             if (value.id === client.id) {
                 this.clients.delete(key);
             }
-            this.sendActiveUsers(client);
+            this.broadcastActiveUsers();
         });
         this.logger.log(`Client disconnected: ${client.id}`);
     }
@@ -47,17 +53,19 @@ let MyGateway = class MyGateway {
         const targetClient = this.clients.get(data.userId);
         if (targetClient) {
             targetClient.emit("privateMessage", data.message);
+            client.emit("privateMessageStatus", "Message delivered");
         }
         else {
-            client.emit("error", "User not connected");
+            client.emit("privateMessageStatus", "User not connected");
         }
     }
     handleGetActiveUsers(client) {
-        this.sendActiveUsers(client);
+        this.broadcastActiveUsers();
     }
-    sendActiveUsers(client) {
+    broadcastActiveUsers() {
         const activeUsers = Array.from(this.clients.keys());
-        client.emit("activeUsers", activeUsers);
+        this.logger.log(`Broadcasting active users: ${JSON.stringify(activeUsers)}`);
+        this.server.emit("activeUsers", activeUsers);
     }
 };
 exports.MyGateway = MyGateway;
@@ -78,12 +86,19 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], MyGateway.prototype, "handlePrivateMessage", null);
 __decorate([
-    (0, websockets_1.SubscribeMessage)("getActiveUsers"),
+    (0, websockets_1.SubscribeMessage)("activeUsers"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [socket_io_1.Socket]),
     __metadata("design:returntype", void 0)
 ], MyGateway.prototype, "handleGetActiveUsers", null);
 exports.MyGateway = MyGateway = __decorate([
-    (0, websockets_1.WebSocketGateway)()
+    (0, websockets_1.WebSocketGateway)({
+        path: "/realtime",
+        cors: {
+            origin: "http://localhost:4200",
+            methods: ["GET", "POST"],
+            credentials: true,
+        },
+    })
 ], MyGateway);
 //# sourceMappingURL=Getway.js.map

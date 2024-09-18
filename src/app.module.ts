@@ -1,3 +1,4 @@
+import { FileSystemService } from './service/file-system.service';
 import { MyGateway } from './Getway';
 import { MailModule } from './modules/Mail.module';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -29,6 +30,7 @@ import { PromoModule } from "./promo/promo.module";
     AppService,
     KnexService,
     AuthService,
+    // FileSystemService,
     AuthUtilsService,
     JwtAuthService,
     JwtService
