@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from "express";
 export class AuthorizationMiddleware implements NestMiddleware {
   constructor(protected jwt: JwtAuthService) {}
   async use(req: Request, res: Response, next: NextFunction) {
+ 
     try {
       if (req.headers.authorization) {
         let token = req.headers.authorization;

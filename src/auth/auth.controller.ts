@@ -18,7 +18,7 @@ export class AuthController {
 
   @Get("get_my_profile")
   async myprofile(@Body() { user_id }) {
-    try {
+    try { 
       return await this.authService.userProfile(user_id);
     } catch (error) {
       throw new BadRequestException(error);
@@ -75,7 +75,7 @@ export class AuthController {
     @Body()
     { email, password, meta }: { email: string; password: string; meta: any }
   ) {
-    try { 
+    try {
       return await this.authService.loginUser({ email, password, meta });
     } catch (error) {
       throw new BadRequestException(error);

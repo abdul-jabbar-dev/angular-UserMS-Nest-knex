@@ -197,6 +197,7 @@ export class AuthService {
         .where({ email: userInfo.email })
         .first();
 
+      console.log(exist);
       if (!exist) {
         throw new BadRequestException("User not register");
       } else {
@@ -204,35 +205,13 @@ export class AuthService {
           if (
             await this.utils.compareHashed(exist.password, userInfo.password)
           ) {
-            if (userInfo.meta["exist"] && userInfo.meta["storeDevId"]) {
-              const { exist, storeDevId } = userInfo.meta;
-              const permit = await this.knexService
-                .getKnex()
-                .table("_users_login_for")
-                .where({ device_id: storeDevId })
-                .first()
-                .returning("*");
-            } else {
-              console.log(userInfo.meta);
-              const { address, deviceId, userAgent, platform } =
-                userInfo.meta.deviceInfo;
-              const permit = await this.knexService
-                .getKnex()
-                .table<UserLoginInfo>("_users_login_for")
-                .insert({
-                  location: address,
-                  device_id: deviceId,
-                  platform,
-                  userAgent,
-                  user_id: exist.id,
-                })
-                .returning("*");
-            }
+            console.log('Password match successfully',userInfo);
+       
 
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
-                email: exist.email,
+                email: exist.email, 
                 username: exist.username,
                 role: exist.role,
                 id: exist.id as unknown as string,
