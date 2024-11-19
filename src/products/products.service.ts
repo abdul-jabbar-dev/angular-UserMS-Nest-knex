@@ -53,27 +53,25 @@ export class ProductsService {
     searchQuery: string | undefined
   ) {
     try {
-      const query = await this.knex
+      const query =   this.knex
         .getKnex()
         .table("_products")
         .where({ status: "available" });
 
-      // if (token) {
-      //   const user = await this.jwt.decode(token);
-      //   if (user && user.id) {
-      //     query.whereNot({ user_id: user.id });
-      //   } else {
-      //     throw new BadRequestException("Invalid token: User ID is missing.");
-      //   }
-      // }
-
-      console.log(query);
-      // if (searchQuery) {
-      //   let [SF, SV] = searchQuery.split(":");
-      //   query
-      //     .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
-      //     .select("id", "title");
-      // }
+      if (token) {
+        const user = await this.jwt.decode(token);
+        if (user && user.id) {
+          query.whereNot({ user_id: user.id });
+        } else {
+          throw new BadRequestException("Invalid token: User ID is missing.");
+        }
+      } 
+      if (searchQuery) {
+        let [SF, SV] = searchQuery.split(":");
+        query
+          .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
+          .select("id", "title");
+      }
 
       return query;
     } catch (error) {

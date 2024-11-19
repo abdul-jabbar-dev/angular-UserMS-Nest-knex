@@ -21,7 +21,6 @@ let MyGateway = class MyGateway {
     }
     afterInit(server) {
         this.logger.log("WebSocket Gateway Initialized");
-        console.log("WebSocket Gateway Initialized");
     }
     handleConnection(client, ...args) {
         const userId = client.handshake.query.userId;

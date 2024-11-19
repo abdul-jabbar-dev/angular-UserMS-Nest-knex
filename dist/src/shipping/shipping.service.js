@@ -175,6 +175,7 @@ let ShippingService = class ShippingService {
                 .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
                 .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
                 .where("_shippingOrder.user_id", user_id);
+            console.log(result);
             return { data: result };
         }
         catch (error) {
@@ -234,15 +235,15 @@ let ShippingService = class ShippingService {
             const result = await this.knexService
                 .getKnex()
                 .table("_shippingOrder")
-                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_users.id", "_users.first_name", "_users.last_name", "_users.phone", "_users.username", "_shippingOrder.id  as order_id", "_users.email", "_delivery.*", "_shippingOrder.id as order_id", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.updated_at as shipping_updated_at")
+                .select("_shippingOrder.*", "_promocode.*", "_products.*", "_users.id", "_users.first_name", "_users.last_name", "_users.phone", "_users.username", "_products.id  as id", "_products.user_id  as buyer_id", "_shippingOrder.user_id  as seller_id", "_users.email", "_delivery.*", "_shippingOrder.id as order_id", "_shippingOrder.created_at as shipping_order_created_at", "_shippingOrder.updated_at as shipping_updated_at")
                 .from("_shippingOrder")
                 .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
-                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
                 .leftJoin("_users", "_shippingOrder.user_id", "_users.id")
+                .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
                 .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
-                .where("_delivery.id", id)
+                .where("_shippingOrder.product_id", id)
                 .first();
-            console.log(result);
+            console.log("user", result);
             return result;
         }
         catch (error) {

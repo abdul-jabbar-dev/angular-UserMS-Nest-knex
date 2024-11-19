@@ -148,8 +148,7 @@ export class AuthService {
         .count("* as totalDone");
 
       const totalDone = parseInt(totalDoneCount[0]?.totalDone || "0", 10);
-
-      console.log({ totalDone, totalBenifit, totalPending });
+ 
 
       return { totalDone, totalBenifit, totalPending };
     } catch (error) {
@@ -195,18 +194,14 @@ export class AuthService {
         .getKnex()
         .table<TUserResponse>("_users")
         .where({ email: userInfo.email })
-        .first();
-
-      console.log(exist);
+        .first(); 
       if (!exist) {
         throw new BadRequestException("User not register");
       } else {
         if (exist.status === "active") {
           if (
             await this.utils.compareHashed(exist.password, userInfo.password)
-          ) {
-            console.log("Password match successfully", userInfo);
-
+          ) { 
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
@@ -383,8 +378,7 @@ export class AuthService {
         .getKnex()
         .table("_users")
         .select(["role", "status"])
-        .where({ id });
-      console.log(role, status);
+        .where({ id }); 
       if (status === "active") {
         const user = await this.knexService
           .getKnex()

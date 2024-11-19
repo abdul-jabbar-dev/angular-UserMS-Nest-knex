@@ -26,8 +26,7 @@ export class MyGateway
   private logger: Logger = new Logger("MyGateway");
 
   afterInit(server: Server) {
-    this.logger.log("WebSocket Gateway Initialized");
-    console.log("WebSocket Gateway Initialized");
+    this.logger.log("WebSocket Gateway Initialized"); 
   }
 
   handleConnection(client: Socket, ...args: any[]) {
