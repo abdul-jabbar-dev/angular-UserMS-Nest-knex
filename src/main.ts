@@ -8,7 +8,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: "https://angular-userms-nest-knex.onrender.com",
+    origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Accept, Authorization",
     credentials: true,
