@@ -35,7 +35,9 @@ export class AuthorizationMiddleware implements NestMiddleware {
           req.route.path === "/product/my_products" ||
           req.route.path === "/user/update_profile"
         ) {
+          
           req.body.user_id = (user as any).id;
+ 
           next();
         } else {
           throw new UnauthorizedException("Unauthorized! Admin can handle.");

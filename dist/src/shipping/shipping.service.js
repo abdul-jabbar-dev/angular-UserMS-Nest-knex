@@ -191,6 +191,7 @@ let ShippingService = class ShippingService {
                 .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
                 .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
                 .leftJoin("_users", "_users.id", "_delivery.delivery_boy_id");
+            console.log(result);
             return { data: result };
         }
         catch (error) {

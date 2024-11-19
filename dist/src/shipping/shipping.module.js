@@ -17,9 +17,7 @@ const promo_service_1 = require("../promo/promo.service");
 const shipping_controller_1 = require("./shipping.controller");
 let ShippingModule = class ShippingModule {
     configure(consumer) {
-        consumer
-            .apply(authorization_middleware_1.AuthorizationMiddleware)
-            .forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping", method: common_1.RequestMethod.GET }, { path: "shipping/get_rider_order", method: common_1.RequestMethod.GET }, { path: "shipping/add_rider", method: common_1.RequestMethod.POST }, { path: "shipping/confirm_rider/:order_id", method: common_1.RequestMethod.PUT }, { path: "shipping/confirm", method: common_1.RequestMethod.POST }, { path: "shipping/all", method: common_1.RequestMethod.GET }, {
+        consumer.apply(authorization_middleware_1.AuthorizationMiddleware).forRoutes({ path: "shipping", method: common_1.RequestMethod.POST }, { path: "shipping", method: common_1.RequestMethod.GET }, { path: "shipping/get_rider_order", method: common_1.RequestMethod.GET }, { path: "shipping/add_rider", method: common_1.RequestMethod.POST }, { path: "shipping/confirm_rider/:order_id", method: common_1.RequestMethod.PUT }, { path: "shipping/confirm", method: common_1.RequestMethod.POST }, { path: "shipping/all", method: common_1.RequestMethod.GET }, {
             path: "shipping/confirm_delivery/:orderId",
             method: common_1.RequestMethod.PUT,
         });

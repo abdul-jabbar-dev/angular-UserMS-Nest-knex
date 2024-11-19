@@ -5,7 +5,7 @@ import config from "knexfile";
 export class KnexService {
   private KNEX: Knex.Knex;
   constructor() {
-    this.KNEX = Knex(config);
+    this.KNEX = Knex(config); 
   }
   getKnex(): Knex.Knex {
     return this.KNEX;

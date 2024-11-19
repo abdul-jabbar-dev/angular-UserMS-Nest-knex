@@ -26,6 +26,7 @@ export class ProductsController {
     @Query()
     { token, searchQuery }: { token: string; searchQuery: string } | undefined
   ) {  
+   
     const result = await this.productsService.getAllProducts(
       token,
       searchQuery
@@ -45,7 +46,7 @@ export class ProductsController {
       page: string | number;
       admin: boolean;
     }
-  ) {
+  ) { 
     if (!admin) {
       throw new UnauthorizedException("Unauthorized route");
     }
@@ -70,7 +71,7 @@ export class ProductsController {
   }
 
   @Get("my_products")
-  async myProducts(@Body() { user_id }, @Query() query) {
+  async myProducts(@Body() { user_id }, @Query() query) { 
     const result = await this.productsService.getMyProducts(user_id,query);
     return result;
   }

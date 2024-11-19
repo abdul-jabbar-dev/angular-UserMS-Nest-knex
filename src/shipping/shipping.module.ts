@@ -24,20 +24,18 @@ import { ShippingController } from "./shipping.controller";
 })
 export class ShippingModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthorizationMiddleware)
-      .forRoutes(
-        { path: "shipping", method: RequestMethod.POST },
-        { path: "shipping", method: RequestMethod.GET },
-        { path: "shipping/get_rider_order", method: RequestMethod.GET },
-        { path: "shipping/add_rider", method: RequestMethod.POST },
-        { path: "shipping/confirm_rider/:order_id", method: RequestMethod.PUT },
-        { path: "shipping/confirm", method: RequestMethod.POST },
-        { path: "shipping/all", method: RequestMethod.GET },
-        {
-          path: "shipping/confirm_delivery/:orderId",
-          method: RequestMethod.PUT,
-        }
-      );
+    consumer.apply(AuthorizationMiddleware).forRoutes(
+      { path: "shipping", method: RequestMethod.POST },
+      { path: "shipping", method: RequestMethod.GET },
+      { path: "shipping/get_rider_order", method: RequestMethod.GET },
+      { path: "shipping/add_rider", method: RequestMethod.POST },
+      { path: "shipping/confirm_rider/:order_id", method: RequestMethod.PUT },
+      { path: "shipping/confirm", method: RequestMethod.POST },
+      { path: "shipping/all", method: RequestMethod.GET },
+      {
+        path: "shipping/confirm_delivery/:orderId",
+        method: RequestMethod.PUT,
+      }
+    );
   }
 }

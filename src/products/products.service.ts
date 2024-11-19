@@ -53,28 +53,29 @@ export class ProductsService {
     searchQuery: string | undefined
   ) {
     try {
-      const query = this.knex
+      const query = await this.knex
         .getKnex()
         .table("_products")
         .where({ status: "available" });
 
-      if (token) {
-        const user = await this.jwt.decode(token);
-        if (user && user.id) {
-          query.whereNot({ user_id: user.id });
-        } else {
-          throw new BadRequestException("Invalid token: User ID is missing.");
-        }
-      }
+      // if (token) {
+      //   const user = await this.jwt.decode(token);
+      //   if (user && user.id) {
+      //     query.whereNot({ user_id: user.id });
+      //   } else {
+      //     throw new BadRequestException("Invalid token: User ID is missing.");
+      //   }
+      // }
 
-      if (searchQuery) {
-        let [SF, SV] = searchQuery.split(":");
-        query
-          .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
-          .select("id", "title");
-      }
+      console.log(query);
+      // if (searchQuery) {
+      //   let [SF, SV] = searchQuery.split(":");
+      //   query
+      //     .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
+      //     .select("id", "title");
+      // }
 
-      return await query;
+      return query;
     } catch (error) {
       if (error?.message && searchQuery?.split(":").length) {
         let [SF] = searchQuery?.split(":");
@@ -82,6 +83,7 @@ export class ProductsService {
           return [];
         }
       }
+
       throw new BadRequestException(
         error.message || "An error occurred while fetching products."
       );

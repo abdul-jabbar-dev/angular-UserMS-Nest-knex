@@ -52,26 +52,12 @@ let ProductsService = class ProductsService {
     }
     async getAllProducts(token, searchQuery) {
         try {
-            const query = this.knex
+            const query = await this.knex
                 .getKnex()
                 .table("_products")
                 .where({ status: "available" });
-            if (token) {
-                const user = await this.jwt.decode(token);
-                if (user && user.id) {
-                    query.whereNot({ user_id: user.id });
-                }
-                else {
-                    throw new common_1.BadRequestException("Invalid token: User ID is missing.");
-                }
-            }
-            if (searchQuery) {
-                let [SF, SV] = searchQuery.split(":");
-                query
-                    .whereRaw(`LOWER(${SF}) LIKE ?`, [`${SV.toLowerCase()}%`])
-                    .select("id", "title");
-            }
-            return await query;
+            console.log(query);
+            return query;
         }
         catch (error) {
             if (error?.message && searchQuery?.split(":").length) {

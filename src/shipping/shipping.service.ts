@@ -230,7 +230,7 @@ export class ShippingService {
         .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
         .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
         .leftJoin("_users", "_users.id", "_delivery.delivery_boy_id");
-
+      console.log(result);
       return { data: result };
     } catch (error) {
       throw error;
@@ -276,38 +276,6 @@ export class ShippingService {
       throw error;
     }
   }
-
-  // async allShipping(productId: number, limit: number) {
-  //   if (isNaN(productId) || isNaN(limit)) {
-  //     throw new Error("Invalid input for productId or limit");
-  //   }
-
-  //   try {
-  //     const result = await this.knexService
-  //       .getKnex()
-  //       .select(
-  //         "_shippingOrder.*",
-  //         "_promocode.*",
-  //         "_products.*",
-  //         "_delivery.*",
-  //         "_users.username as delivery_boy_name",
-  //         "_delivery.delivery_status",
-  //         "_shippingOrder.created_at as shipping_order_created_at",
-  //         "_shippingOrder.id as order_id"
-  //       )
-  //       .from("_shippingOrder")
-  //       .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
-  //       .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
-  //       .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
-  //       .leftJoin("_users", "_users.id", "_delivery.delivery_boy_id")
-  //       .where("_shippingOrder.product_id", Number(productId))
-  //       .limit(limit);
-
-  //     return { data: result };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
 
   async findOne(id: number) {
     try {
@@ -403,4 +371,36 @@ export class ShippingService {
   remove(id: number) {
     return `This action removes a #${id} shipping`;
   }
+
+  // async allShipping(productId: number, limit: number) {
+  //   if (isNaN(productId) || isNaN(limit)) {
+  //     throw new Error("Invalid input for productId or limit");
+  //   }
+
+  //   try {
+  //     const result = await this.knexService
+  //       .getKnex()
+  //       .select(
+  //         "_shippingOrder.*",
+  //         "_promocode.*",
+  //         "_products.*",
+  //         "_delivery.*",
+  //         "_users.username as delivery_boy_name",
+  //         "_delivery.delivery_status",
+  //         "_shippingOrder.created_at as shipping_order_created_at",
+  //         "_shippingOrder.id as order_id"
+  //       )
+  //       .from("_shippingOrder")
+  //       .leftJoin("_promocode", "_shippingOrder.promocode_id", "_promocode.id")
+  //       .leftJoin("_products", "_shippingOrder.product_id", "_products.id")
+  //       .leftJoin("_delivery", "_delivery.order_id", "_shippingOrder.id")
+  //       .leftJoin("_users", "_users.id", "_delivery.delivery_boy_id")
+  //       .where("_shippingOrder.product_id", Number(productId))
+  //       .limit(limit);
+
+  //     return { data: result };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }

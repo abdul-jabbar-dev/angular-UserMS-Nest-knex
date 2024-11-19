@@ -39,12 +39,14 @@ export class ShippingController {
 
     return await this.shippingService.rider_confirm(res);
   }
+
   @Post()
   async create(@Body() createShipping) {
     const result = await this.shippingService.create(createShipping);
 
     return result;
   }
+
   @Post("/add_rider")
   async addRider(@Body() createShipping) {
     const result = await this.shippingService.addrider(createShipping);
@@ -59,7 +61,6 @@ export class ShippingController {
 
   @Get(":product_id")
   async findOne(@Param("product_id") id: string) {
- 
     return await this.shippingService.findOne(+id);
   }
 
@@ -74,7 +75,7 @@ export class ShippingController {
   }
 
   @Put("confirm_delivery/:orderId")
-  confirmDelivery(@Param("orderId") id: string, @Body() {code}) { 
+  confirmDelivery(@Param("orderId") id: string, @Body() { code }) {
     return this.shippingService.confirmDelivery(+id, code);
   }
 

@@ -152,7 +152,7 @@ let AuthService = class AuthService {
             else {
                 if (exist.status === "active") {
                     if (await this.utils.compareHashed(exist.password, userInfo.password)) {
-                        console.log('Password match successfully', userInfo);
+                        console.log("Password match successfully", userInfo);
                         loginMyUser = {
                             data: { ...exist, password: "" },
                             token: await this.jwt.generateToken({

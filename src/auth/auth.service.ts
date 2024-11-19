@@ -205,13 +205,12 @@ export class AuthService {
           if (
             await this.utils.compareHashed(exist.password, userInfo.password)
           ) {
-            console.log('Password match successfully',userInfo);
-       
+            console.log("Password match successfully", userInfo);
 
             loginMyUser = {
               data: { ...exist, password: "" },
               token: await this.jwt.generateToken({
-                email: exist.email, 
+                email: exist.email,
                 username: exist.username,
                 role: exist.role,
                 id: exist.id as unknown as string,
